@@ -42,8 +42,11 @@ initControls(){
 
 update() {
    
-    let moveX = 0;
-    let moveZ = 0;
+   // let moveX = 0;
+    //let moveZ = 0;
+
+    let moveX = this.moveX || 0;
+    let moveZ = this.moveZ || 0;
      //kontrola stisknutých kláves
      if(this.keys['s']) moveZ -= 1;
      if(this.keys['w']) moveZ += 1;
@@ -62,7 +65,7 @@ update() {
         if (!this.moveZ) this.moveZ = 0;
         this.mesh.position.x += moveX;
         this.mesh.position.z += moveZ;
-        console.log(`🕹 Kulička se pohybuje: X=${this.mesh.position.x}, Z=${this.mesh.position.z}`);
+        console.log(`🕹 Kulička se pohybuje: X=${this.mesh.position.x}, moveX=${this.moveX}, Z=${this.mesh.position.z}`);
 
        
         //pokud hrac zmenil pozici pridej trail 
@@ -73,11 +76,11 @@ update() {
 
         for (let i = this.trails.length - 1; i >= 0; i--) {
             const trail = this.trails[i];
-            trail.material.opacity -= 0.02; // 🔥 Snižujeme průhlednost
+            trail.material.opacity -= 0.02; // Snižujeme průhlednost
             if (trail.material.opacity <= 0) {
-                this.scene.remove(trail); // ❌ Odstraníme trail ze scény
-                this.trails.splice(i, 1); // ❌ Odstraníme ho i z pole
-                console.log("❌ Trail odstraněn, zbývá:", this.trails.length);
+                this.scene.remove(trail); //  Odstraníme trail ze scény
+                this.trails.splice(i, 1); //  Odstraníme ho i z pole
+                console.log(" Trail odstraněn, zbývá:", this.trails.length);
             }
         }
         

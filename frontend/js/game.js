@@ -28,6 +28,8 @@ export class Game {
 
      this.setupLights();
      this.maze = new Maze(this.mazeSize, this.wallSize,2);
+     window.player = this.player; // Nastavení globální reference
+     console.log("window player nastaven na :", window.player);
      this.maze.build(this.scene);
     
 
