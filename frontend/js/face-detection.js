@@ -136,18 +136,62 @@ async function detectFace() {
 function processFacePosition(detections) {
     const nose = detections.landmarks.getNose()[3];
     const faceCenterX = video.videoWidth / 2;
-    //const faceCenterY = video.videoHeight / 2;
+    const faceCenterY = video.videoHeight / 2;
 
     
 
-    const offsetX = nose.x - faceCenterX;
-   // const offsetY = nose.y -faceCenterY;
+    const offsetX = nose.x - faceCenterX; //vodorovný pohyb
+    const offsetY = nose.y -faceCenterY;  //svislý pohyb
 
 
-    const threshold = 5; //min pohyb k pohybu kuličky
+    const threshold = 7; //min pohyb k pohybu kuličky
     const sensitivity = 0.05; //intenzita reakce na pohyb
 
-    if (Math.abs(offsetX) > threshold) {
+    
+
+    //horizontal. pohyb (<- - ->)
+    if(Math.abs(offsetX) > threshold) {
+        const adjustedSpeedX = Math.min(Math.abs(offsetX) * 0.005, 0.5);
+        moveX = offsetX > 0 ? adjustedSpeedX : -adjustedSpeedX;
+    }
+
+    // Vertikal pohyb ()
+    if(Math.abs(offsetY) > threshold) {
+        const adjustedSpeedZ = Math.min(Math.abs(offsetY) * 0.005, 0.5);
+        moveZ = offsetY > 0 ? adjustedSpeedZ : -adjustedSpeedZ;
+    }
+
+    //Kombinace směrů
+    if (window.player) {
+        window.player.moveX = moveX;
+        window.player.moveZ = moveZ;
+    }
+
+    // Aktualizace textu pohybu
+    if (moveX > 0 && moveZ < 0) {
+        movementText.innerText = "↗ Pohyb: vpravo nahoru";
+    } else if (moveX > 0 && moveZ > 0) {
+        movementText.innerText = "↘ Pohyb: vpravo dolů";
+    } else if (moveX < 0 && moveZ < 0) {
+        movementText.innerText = "↖ Pohyb: vlevo nahoru";
+    } else if (moveX < 0 && moveZ > 0) {
+        movementText.innerText = "↙ Pohyb: vlevo dolů";
+    } else if (moveX > 0) {
+        movementText.innerText = " Pohyb: vpravo";
+    } else if (moveX < 0) {
+        movementText.innerText = " Pohyb: vlevo";
+    } else if (moveZ < 0) {
+        movementText.innerText = " Pohyb: nahoru";
+    } else if (moveZ > 0) {
+        movementText.innerText = " Pohyb: dolů";
+    } else {
+        movementText.innerText = " Bez pohybu";
+    }
+
+
+
+
+    /*if (Math.abs(offsetX) > threshold) {
         const adjustedSpeed = Math.min(Math.abs(offsetX) * 0.005,0.5); //Dynamická rychlost
         if (offsetX > 0) {
                 window.player.moveX = adjustedSpeed;
@@ -164,7 +208,7 @@ function processFacePosition(detections) {
             window.player.moveX = 0; // Pokud je hlava skoro uprostřed, zastavíme kuličku
             movementText.innerText = " bez pohybu";
     
-    }
+    }*/
 
    
 }

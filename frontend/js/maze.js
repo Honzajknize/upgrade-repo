@@ -29,9 +29,13 @@
                  }
              }
          }
+
      let startX = 1, startY = 1;
      maze[startY][startX] = 0;
      carvePath(startX, startY);
+
+     this.startPosition = {x: startX, y: startY};
+
  //poslední otevřený node v bludišti
  let endX = size - 2;
  let endY = size - 2;
@@ -47,8 +51,8 @@
 
 
      //otevření vchodu
-     maze[0][1] = 0;
-     maze[1][1] = 0;
+     //maze[0][1] = 0;
+     //maze[1][1] = 0;
     
    
 
@@ -91,16 +95,42 @@ build(scene) {
 
 
 isWall(x,z){
-   const buffer = this.corridorSize / 2;
+   /*const buffer = this.corridorSize / 2;
     const gridX = Math.floor((x + buffer) / this.corridorSize);
     const gridZ = Math.floor((z + buffer) / this.corridorSize);
 
      // **Kontrola, zda nejsme mimo pole**
      if (gridZ < 0 || gridZ >= this.grid.length || gridX < 0 || gridX >= this.grid[0].length) {
         return true;
-    }
+    }*/
+   const gridX = Math.floor(x / this.wallSize);
+   const gridZ = Math.floor(z / this.wallSize);
+
+   if (gridZ < 0 || gridZ >= this.grid.length || gridX >= this.grid[0].length) {
+    return true;
+
+   }
+
+   const isWall = this.grid[gridZ][gridX] ===1;
+
+   if (isWall) {
+    const debugCube = new THREE.BoxGeometry(this.wallSize * 0.5, 0.2, this.wallSize * 0.5);
+    const debugMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff,transparent: true, opacity: 0.5});
+    const debugMesh = new THREE.Mesh(debugCube, debugMaterial);
+    debugMesh.position.set(gridX * this.wallSize, 0.1, gridZ * this.wallSize);
+    this.scene.add(debugMesh);
+   }
    
-   return this.grid[gridZ][gridX] === 1;
+   return isWall;
+   //return this.grid[gridZ][gridX] === 1;
+}
+
+isCheckpoint(x,z) {
+    const buffer = this.corridorSize / 2;
+    const gridX = Math.floor((x + buffer) / this.corridorSize);
+    const gridZ = Math.floor((z + buffer) / this.corridorSize);
+
+    return gridX === this.goalPosition.x && gridZ === this.goalPosition.y;
 }
 
 removeFromScene(scene){

@@ -6,7 +6,8 @@ constructor(scene, maze, wallSize, corridorSize) {
     this.wallSize = wallSize;
     this.corridorSize = corridorSize;
     this.maze = maze;
-    window.player = this; //Globální přístu pro face-detections.js
+    window.player = this; //Globální přístu pro face-detections.js -umožnuje posílat pohyb
+
     this.geometry = new THREE.SphereGeometry(0.5,32,32);
     this.material = new THREE.MeshStandardMaterial({ color: 0x00ffd5});
     this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -15,7 +16,7 @@ constructor(scene, maze, wallSize, corridorSize) {
     this.trailTimer = 0;
     this.trailInterval = 10; //po kolika update cyklech se vytvoří stopa
     this.trails = []; // pole pro uložení stop
-   // this.setStartPosition();
+    this.setStartPosition();
 
    
     
@@ -23,6 +24,7 @@ constructor(scene, maze, wallSize, corridorSize) {
 
     this.moveSpeed = 0.1;
     this.initControls();
+    this.setStartPosition();
 }
 
 
@@ -40,13 +42,29 @@ initControls(){
         });   
 }
 
+setStartPosition(){
+    if(!this.maze || !this.maze.startPosition) {
+        console.error(" Chyba: startPosition není definovánaa v bludisti.");
+        return;
+    }
+
+
+   this.mesh.position.set(
+    this.maze.startPosition.x * this.wallSize,
+    0.5,
+    this.maze.startPosition.y * this.wallSize
+   );
+   //console.log(' Hrac se spawnul na start X=${this.mesh.position.x}, Z=${this.mesh.postion.z}');
+}
+
 update() {
    
-   // let moveX = 0;
-    //let moveZ = 0;
+    //let moveX = this.moveX || 0;
+    //let moveZ = this.moveZ || 0;
 
-    let moveX = this.moveX || 0;
-    let moveZ = this.moveZ || 0;
+    let moveX = (window.player && window.player.moveX) ? window.player.moveX : 0;
+    let moveZ = (window.player && window.player.moveZ) ? window.player.moveZ : 0;
+
      //kontrola stisknutých kláves
      if(this.keys['s']) moveZ -= 1;
      if(this.keys['w']) moveZ += 1;
@@ -59,32 +77,48 @@ update() {
         moveX = (moveX / length)* this.moveSpeed;
         moveZ = (moveZ / length) * this.moveSpeed;
 
-        //posun hráče
+        //posun hráče +kolize
 
-        if (!this.moveX) this.moveX = 0;
-        if (!this.moveZ) this.moveZ = 0;
-        this.mesh.position.x += moveX;
-        this.mesh.position.z += moveZ;
-        console.log(`🕹 Kulička se pohybuje: X=${this.mesh.position.x}, moveX=${this.moveX}, Z=${this.mesh.position.z}`);
+       // if (!this.moveX) this.moveX = 0;
+       // if (!this.moveZ) this.moveZ = 0;
 
+       const newX = this.mesh.position.x + moveX;
+       const newZ = this.mesh.position.z + moveZ;
+
+       const futureX = newX + Math.sign(moveX) * 0.3;//maly offset pro lepsi detekci
+       const futureZ = newZ + Math.sign(moveZ) * 0.3;
+
+        if (!this.maze.isWall(futureX,futureZ)) {
+            this.mesh.position.set(newX, this.mesh.position.y, newZ);
+            //console.log(`Kulička se pohybuje: X=${this.mesh.position.x}, moveX=${this.moveX}, Z=${this.mesh.position.z}`);
+        }
+            
+
+        //this.mesh.position.x += newX;
+        //this.mesh.position.z += newZ;
+        
        
+
+        //hrac dojel docile
+        if (this.maze.isCheckpoint(this.mesh.position.x, this.mesh.position.z, 0.5)) {
+            showWinMenu();
+        }
+
         //pokud hrac zmenil pozici pridej trail 
-        if (Date.now() - this.lastTrailTime > 400) { // ⏳ Přidává stopu každou vteřinu
+        if (Date.now() - this.lastTrailTime > 400) { // Přidává stopu každou vteřinu
             this.addTrail();
             this.lastTrailTime = Date.now();
         }
 
         for (let i = this.trails.length - 1; i >= 0; i--) {
             const trail = this.trails[i];
-            trail.material.opacity -= 0.02; // Snižujeme průhlednost
+            trail.material.opacity -= 0.02; // Snižujeme opacitu trailu
             if (trail.material.opacity <= 0) {
                 this.scene.remove(trail); //  Odstraníme trail ze scény
                 this.trails.splice(i, 1); //  Odstraníme ho i z pole
                 console.log(" Trail odstraněn, zbývá:", this.trails.length);
             }
         }
-        
-
     }
 
     }
@@ -108,7 +142,7 @@ update() {
     
         this.scene.add(trail); // Přidání do hlavní scény
         this.trails.push(trail);
-        console.log("✅ Stopa úspěšně přidána!");
+        
     }
     
 

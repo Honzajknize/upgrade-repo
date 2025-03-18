@@ -8,5 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resetButton.addEventListener("click", () => game.resetMaze());
 });
 
+
+
 //new Game();
 

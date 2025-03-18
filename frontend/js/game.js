@@ -6,8 +6,6 @@ export class Game {
 
  constructor() {
     console.log("✅ Hra inicializována!");
-
-
      this.scene = new THREE.Scene();
      
      this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -28,6 +26,8 @@ export class Game {
 
      this.setupLights();
      this.maze = new Maze(this.mazeSize, this.wallSize,2);
+     
+     this.player = new Player(this.scene, this.maze, this.wallSize, 2);
      window.player = this.player; // Nastavení globální reference
      console.log("window player nastaven na :", window.player);
      this.maze.build(this.scene);
@@ -69,6 +69,8 @@ export class Game {
      this.camera.lookAt(this.player.mesh.position);
  }
 
+
+
  resetMaze() {
      //Odstranění objektů bludiště
      this.maze.removeFromScene(this.scene);
@@ -78,6 +80,8 @@ export class Game {
 
      this.player.resetPosition();
  }
+
+ 
 
 
  animate(){
@@ -90,4 +94,18 @@ export class Game {
  }
 
 }
+
+function restartGame() {
+    document.getElementById("winMenu").style.display = "none";
+    game.resetMaze();
+}
+
+function showWinMenu() {
+    const winMenu = document.getElementById("winMenu");
+    if (winMenu) {
+        winMenu.style.display = "block";
+    } else {
+        console.error(" winmenu neexistuje v DOM.");
+    }
+ }
 
