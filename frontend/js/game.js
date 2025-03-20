@@ -1,5 +1,5 @@
 import * as THREE from '../../knihovny/threejs/three.module.js';
-import {Maze} from './maze.js';
+import { Maze } from './maze.js';
 import Player from './player.js';
 
 export class Game {
@@ -21,25 +21,46 @@ export class Game {
     floor.position.y = 0; 
     this.scene.add(floor);
 
+    //velikosti bludiště
      this.wallSize = 1;
-     this.mazeSize = 9;
+     this.mazeSize = 15;
+     this.selectedAlgorithm = "binaryTree";
 
+     //světlo
      this.setupLights();
-     this.maze = new Maze(this.mazeSize, this.wallSize,2);
+     //maze
+     this.createMaze();
+
+     this.createPlayer();
      
-     this.player = new Player(this.scene, this.maze, this.wallSize, 2);
-     window.player = this.player; // Nastavení globální reference
-     console.log("window player nastaven na :", window.player);
-     this.maze.build(this.scene);
-    
 
-     this.player = new Player(this.scene, this.maze,this.wallSize,2);
-    
-
+     //player
+     //this.player = new Player(this.scene, this.maze, this.wallSize, 2);
+     //window.player = this.player; // Nastavení globální reference
+   
      this.camera.position.set(this.mazeSize, 10, this.mazeSize);
      console.log("Hráč inicializován:", this.player);
      this.camera.lookAt(this.player.mesh.position);
-     
+   
+
+        const mazeSelector = document.getElementById("mazeAlgo");
+
+        if(mazeSelector) {
+            mazeSelector.addEventListener("change", (event) => {
+                console.log("Změna algoritmu:", event.target.value);
+                this.selectedAlgorithm = event.target.value;
+                this.resetMaze();
+            });
+        } else {
+            console.error("Element #mazeAlgo nebyl nalezen v DOM.");
+        }
+    
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key.toLowerCase() === 'c') {
+            this.maze.toggleCollisions();
+        }
+      });
    
      this.animate();
  }
@@ -69,19 +90,46 @@ export class Game {
      this.camera.lookAt(this.player.mesh.position);
  }
 
+ createMaze() {
+    console.log("🔄 Generování bludiště pomocí:", this.selectedAlgorithm);
+   
+    this.maze = new Maze(this.mazeSize, this.wallSize,2,
+        this.selectedAlgorithm); 
+    this.maze.build(this.scene);
+ }
+
+ createPlayer() {
+    this.player = new Player(this, this.scene, this.maze, this.wallSize, 2);
+    window.player = this.player;
+    console.log(" Hráč inicializován:", this.player);
+ }
+
+ showWinMenu() {
+    const winMenu = document.getElementById("winMenu");
+    if (winMenu) {
+        winMenu.style.display = "block";
+    } else {
+        console.error(" winmenu neexistuje v DOM.");
+    }
+ }
+
+ restartGame() {
+    document.getElementById("winMenu").style.display = "none";
+    game.resetMaze();
+}
+
 
 
  resetMaze() {
+    console.log (" Reset bludiště...");
      //Odstranění objektů bludiště
      this.maze.removeFromScene(this.scene);
-
-     this.maze = new Maze(this.mazeSize,this.wallSize,this.corridorSize);
+     this.createMaze();
+     this.createPlayer();
      this.maze.build(this.scene);
-
      this.player.resetPosition();
  }
-
- 
+     
 
 
  animate(){
@@ -95,17 +143,7 @@ export class Game {
 
 }
 
-function restartGame() {
-    document.getElementById("winMenu").style.display = "none";
-    game.resetMaze();
-}
 
-function showWinMenu() {
-    const winMenu = document.getElementById("winMenu");
-    if (winMenu) {
-        winMenu.style.display = "block";
-    } else {
-        console.error(" winmenu neexistuje v DOM.");
-    }
- }
+
+
 

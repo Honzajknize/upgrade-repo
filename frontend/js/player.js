@@ -1,13 +1,24 @@
 import * as THREE from '../../knihovny/threejs/three.module.js';
 export class Player {
-constructor(scene, maze, wallSize, corridorSize) {
+constructor(game, scene, maze, wallSize, corridorSize) {
+    if (!scene || !(scene instanceof THREE.Scene)) {
+        console.error("Chyba: scene není správný THREE.Scene objekt!", scene);
+        return;
+    }
+    
+    
+    this.game = game;
     this.scene = scene;
-    this.lastTrailTime = 0;
+    this.maze = maze;
     this.wallSize = wallSize;
     this.corridorSize = corridorSize;
-    this.maze = maze;
+    this.moveSpeed = 0.05;
+    this.lastTrailTime = 0;
+    this.trails = [];
+
     window.player = this; //Globální přístu pro face-detections.js -umožnuje posílat pohyb
 
+    //kulička
     this.geometry = new THREE.SphereGeometry(0.5,32,32);
     this.material = new THREE.MeshStandardMaterial({ color: 0x00ffd5});
     this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -16,13 +27,15 @@ constructor(scene, maze, wallSize, corridorSize) {
     this.trailTimer = 0;
     this.trailInterval = 10; //po kolika update cyklech se vytvoří stopa
     this.trails = []; // pole pro uložení stop
-    this.setStartPosition();
+
+  
+
+   // this.player = new Player(this, this.scene, this.maze, this.wallSize, 2);
+    
 
    
     
     scene.add(this.mesh);
-
-    this.moveSpeed = 0.1;
     this.initControls();
     this.setStartPosition();
 }
@@ -43,27 +56,27 @@ initControls(){
 }
 
 setStartPosition(){
-    if(!this.maze || !this.maze.startPosition) {
+    if(!this.maze.startPosition) {
         console.error(" Chyba: startPosition není definovánaa v bludisti.");
+        
         return;
     }
-
 
    this.mesh.position.set(
     this.maze.startPosition.x * this.wallSize,
     0.5,
     this.maze.startPosition.y * this.wallSize
    );
-   //console.log(' Hrac se spawnul na start X=${this.mesh.position.x}, Z=${this.mesh.postion.z}');
+   console.log(' Hrac se spawnul na start X=${this.mesh.position.x}, Z=${this.mesh.postion.z}');
 }
 
 update() {
    
-    //let moveX = this.moveX || 0;
-    //let moveZ = this.moveZ || 0;
+    let moveX = this.moveX || 0;
+    let moveZ = this.moveZ || 0;
 
-    let moveX = (window.player && window.player.moveX) ? window.player.moveX : 0;
-    let moveZ = (window.player && window.player.moveZ) ? window.player.moveZ : 0;
+    //let moveX = (window.player && window.player.moveX) ? window.player.moveX : 0;
+    //let moveZ = (window.player && window.player.moveZ) ? window.player.moveZ : 0;
 
      //kontrola stisknutých kláves
      if(this.keys['s']) moveZ -= 1;
@@ -88,10 +101,12 @@ update() {
        const futureX = newX + Math.sign(moveX) * 0.3;//maly offset pro lepsi detekci
        const futureZ = newZ + Math.sign(moveZ) * 0.3;
 
+       
         if (!this.maze.isWall(futureX,futureZ)) {
             this.mesh.position.set(newX, this.mesh.position.y, newZ);
-            //console.log(`Kulička se pohybuje: X=${this.mesh.position.x}, moveX=${this.moveX}, Z=${this.mesh.position.z}`);
+            
         }
+            
             
 
         //this.mesh.position.x += newX;
@@ -100,8 +115,8 @@ update() {
        
 
         //hrac dojel docile
-        if (this.maze.isCheckpoint(this.mesh.position.x, this.mesh.position.z, 0.5)) {
-            showWinMenu();
+       if (this.maze.isCheckpoint(this.mesh.position.x, this.mesh.position.z)) {
+            this.game.showWinMenu();
         }
 
         //pokud hrac zmenil pozici pridej trail 
@@ -148,7 +163,7 @@ update() {
 
 
 resetPosition() {
-   
+  
     this.setStartPosition();
 }
 
