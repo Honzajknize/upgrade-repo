@@ -1,6 +1,6 @@
 @use 'variables' as *;
 #mazeSettings {
-    width: 300px;
+    width: 20%;
     background: #222;
     color: white;
     padding: 15px;
@@ -9,20 +9,31 @@
     position: relative;
   
     &.closed {
-      width: 40px;
+      transform: translateX(100%);
+      position: absolute;
+      right: 0;
+      top: 0;
+      height:100%;
+      
     }
   }
   
   #toggleSettings {
+    position: absolute;
     cursor: pointer;
-    writing-mode: vertical-rl;
+    //writing-mode: vertical-rl;
+    left: -40px;
+    top: 20px;
+    background: #444;
+    color: white;
     text-orientation: mixed;
     transform: rotate(180deg);
     font-size: 20px;
     text-align: center;
-    padding: 10px 5px;
+    padding: 10px;
     background-color: #333;
-    border-right: 2px solid #555;
+    cursor: pointer;
+    border-right: 5px 0 0 5 px;
   }
   
   #settingsContent {

@@ -94,8 +94,21 @@ async loadShaders(vertexPath,fragmentPath) {
 
 initControls(){
     this.keys = {}; //objekt pro sledování stisknutých kláves
+
+     // Uchovám reference pro možnost odstranění
+     this._handleKeyDown = (event) => {
+        this.keys[event.key.toLowerCase()] = true;
+    };
+
+    this._handleKeyUp = (event) => {
+        this.keys[event.key.toLowerCase()] = false;
+    };
+
+    document.addEventListener('keydown', this._handleKeyDown);
+    document.addEventListener('keyup', this._handleKeyUp);
+}
    
-     document.addEventListener('keydown',
+    /* document.addEventListener('keydown',
          (event) => {
             this.keys[event.key.toLowerCase()] = true;
          });
@@ -103,8 +116,10 @@ initControls(){
      document.addEventListener('keyup',
          (event) => {
             this.keys[event.key.toLowerCase()] = false;
-        });   
+        });  
+         
 }
+        */
 
 setStartPosition(){
     if(!this.mesh) {
@@ -125,6 +140,21 @@ setStartPosition(){
 
    console.log(` Hráč se spawnul na start X=${this.mesh.position.x}, Z=${this.mesh.position.z}`);
 
+}
+
+destroy() {
+   // Odstranění posluchačů událostí
+   document.removeEventListener('keydown', this._handleKeyDown);
+   document.removeEventListener('keyup', this._handleKeyUp);
+
+   // Odstranění objektu hráče
+   if (this.mesh && this.scene) {
+       this.scene.remove(this.mesh);
+   }
+
+   // Odstranění trailů
+   this.trails.forEach(trail => this.scene.remove(trail));
+   this.trails = [];
 }
 
 
