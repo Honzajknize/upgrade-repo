@@ -1,0 +1,31 @@
+@use 'variables' as *;
+#winMenu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 20px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    text-align: center;
+    font-size: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    display: none;
+  
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: gold;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: darkgoldenrod;
+      }
+    }
+  }

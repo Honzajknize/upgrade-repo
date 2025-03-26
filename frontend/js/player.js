@@ -1,4 +1,5 @@
 import * as THREE from '../../knihovny/threejs/three.module.js';
+
 export class Player {
 constructor(game, scene, maze, wallSize, corridorSize) {
     if (!scene || !(scene instanceof THREE.Scene)) {
@@ -13,15 +14,33 @@ constructor(game, scene, maze, wallSize, corridorSize) {
     this.wallSize = wallSize;
     this.corridorSize = corridorSize;
     this.moveSpeed = 0.05;
-    this.lastTrailTime = 0;
+    //this.geometry = new THREE.SphereGeometry(0.5, 32,32);
     this.trails = [];
+    this.lastTrailTime = 0;
 
     window.player = this; //Globální přístu pro face-detections.js -umožnuje posílat pohyb
 
     //kulička
     this.geometry = new THREE.SphereGeometry(0.5,32,32);
+
+    //TEST SHADERU
+    /*this.loadShaders("../shadery/SpaceSpore.vs", "../shadery/SpaceSpore.fs").then(material => {
+        this.mesh = new THREE.Mesh(this.geometry, material);
+        scene.add(this.mesh);
+        if (this.mesh) {
+            this.setStartPosition();
+        } else {
+            console.error(" Chyba: this.mesh není vytvořen!");
+        } 
+    })
+    .catch(error => console.error("Chyba při načítání shaderů:", error));
+*/
+   // this.initControls();
+    //this.setStartPosition();
+
     this.material = new THREE.MeshStandardMaterial({ color: 0x00ffd5});
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.scene.add(this.mesh);
     
     //časovač na mizení efektů
     this.trailTimer = 0;
@@ -35,9 +54,41 @@ constructor(game, scene, maze, wallSize, corridorSize) {
 
    
     
-    scene.add(this.mesh);
+    
     this.initControls();
     this.setStartPosition();
+}
+
+async loadShaders(vertexPath,fragmentPath) {
+    try {
+        console.log(`Načítám vertex shader z: ${vertexPath}`);
+        console.log(`Načítám frag. shader z: ${fragmentPath}`);
+        const vertexShader = await fetch(vertexPath).then(res => res.text());
+        const fragmentShader = await fetch(fragmentPath).then(res => res.text());
+
+        if (!vertexShader || !fragmentShader) {
+            console.error("Shader nebyl načten! Soubor je prázdný nebo neexistuje.");
+            return new THREE.MeshStandardMaterial({ color: 0xff0000 });
+        }
+
+        console.log(" Vertex shader načten:\n", vertexShader.substring(0, 100) + "..."); // Zkrácený výpis
+        console.log(" Fragment shader načten:\n", fragmentShader.substring(0, 100) + "...");
+
+
+
+    //vytvoření materiálu
+        return new THREE.ShaderMaterial({
+            uniforms: { time: { value: 0.0 } },
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+        
+        });
+
+    } catch (error) {
+        console.error(" Chyba při načítání shaderů:", error);
+        return new THREE.MeshStandardMaterial({ color: 0xff0000 });
+    }
+    
 }
 
 
@@ -56,6 +107,10 @@ initControls(){
 }
 
 setStartPosition(){
+    if(!this.mesh) {
+        console.error(" Chyba: `startPosition` není definována v bludišti.");
+        return;
+    }
     if(!this.maze.startPosition) {
         console.error(" Chyba: startPosition není definovánaa v bludisti.");
         
@@ -63,20 +118,21 @@ setStartPosition(){
     }
 
    this.mesh.position.set(
-    this.maze.startPosition.x * this.wallSize,
-    0.5,
-    this.maze.startPosition.y * this.wallSize
+        this.maze.startPosition.x * this.wallSize,
+        0.5,
+        this.maze.startPosition.y * this.wallSize
    );
-   console.log(' Hrac se spawnul na start X=${this.mesh.position.x}, Z=${this.mesh.postion.z}');
+
+   console.log(` Hráč se spawnul na start X=${this.mesh.position.x}, Z=${this.mesh.position.z}`);
+
 }
 
-update() {
+
+
+update(deltaTime) {
    
     let moveX = this.moveX || 0;
     let moveZ = this.moveZ || 0;
-
-    //let moveX = (window.player && window.player.moveX) ? window.player.moveX : 0;
-    //let moveZ = (window.player && window.player.moveZ) ? window.player.moveZ : 0;
 
      //kontrola stisknutých kláves
      if(this.keys['s']) moveZ -= 1;
@@ -92,8 +148,6 @@ update() {
 
         //posun hráče +kolize
 
-       // if (!this.moveX) this.moveX = 0;
-       // if (!this.moveZ) this.moveZ = 0;
 
        const newX = this.mesh.position.x + moveX;
        const newZ = this.mesh.position.z + moveZ;
@@ -134,6 +188,11 @@ update() {
                 console.log(" Trail odstraněn, zbývá:", this.trails.length);
             }
         }
+//  Animace shaderu (pokud podporuje čas)
+/*if (this.mesh && this.mesh.material.uniforms.time) {
+    this.mesh.material.uniforms.time.value += deltaTime;
+}
+*/
     }
 
     }

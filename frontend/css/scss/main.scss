@@ -1,7 +1,9 @@
-$primary-color: #ff5722;
-$hover-color: #e64a19;
-$background-dark: rgba(0,0,0,0.7);
-$border-radius: 10px;
+@use 'variables' as *;
+@use 'layout';
+@use 'camera';
+@use 'controls';
+@use 'winmenu';
+@use 'maze-settings';
 
 //Kontejner pro kameru a tlačítko
 .camera-container {

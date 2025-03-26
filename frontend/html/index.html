@@ -3,40 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My first three.js app</title>
+    <title>Bludiště</title>
     <!-- I M P O R T S -->
     <script type="module" src="../js/main.js"></script>
     <script defer src="/knihovny/faceapijs/face-api.min.js"></script>
     <script defer src="../js/face-detection.js"></script>
-    
-
     <link rel="stylesheet" href="../css/style.css">
 
 </head>
 <body>
-    <div id="controls">
+    <div id="appContainer">
+  
+      <!-- Horní panel -->
+      <div id="topBar">
         <button id="toggleCamera">Zapnout kameru</button>
         <button id="resetMaze">Refresh</button>
-    </div>
-    
-    <div id="winMenu">
-        <p> Jsi v Cíli!</p>
+      </div>
+  
+      <!-- Hlavní obsah -->
+      <div id="mainContent">
+  
+        <!-- Kamera vlevo -->
+        <div id="cameraContainer">
+          <video id="cameraFeed" autoplay muted></video>
+        </div>
+  
+        <!-- Hra uprostřed -->
+        <div id="gameContainer"></div>
+  
+        <!-- Panel nastavení vpravo -->
+        <div id="mazeSettings" class="closed">
+          <div id="toggleSettings">&#9776;</div>
+          <div id="settingsContent">
+            <h3>Nastavení bludiště</h3>
+  
+            <label for="mazeShape">Tvar:</label>
+            <select id="mazeShape">
+              <option value="square">Čtvercový</option>
+              <option value="circle">Kruhový</option>
+            </select>
+  
+            <label for="mazeSize">Velikost:</label>
+            <input type="range" id="mazeSize" min="5" max="50" value="15">
+  
+            <label for="mazeDifficulty">Obtížnost:</label>
+            <input type="range" id="mazeDifficulty" min="1" max="5" value="3">
+  
+            <label for="mazeAlgo">Výběr algoritmu:</label>
+            <select id="mazeAlgo">
+              <option value="prim">Prim's algorithm</option>
+              <option value="binaryTree">Binary Tree</option>
+            </select>
+  
+            <button id="generateMaze">Generovat</button>
+          </div>
+        </div>
+  
+      </div>
+  
+      <!-- Win menu -->
+      <div id="winMenu">
+        <p>Jsi v cíli!</p>
         <button id="restartGame">Hrát znovu</button>
+      </div>
+  
     </div>
-
-   
-
-    <div id="mazeSwitch">
-        <label for="mazeSwitchmaze"> Výběr algoritmu:</label>
-        <select id="mazeAlgo">
-            <option value="prim">Prim's algorithm</option>
-            <option value="binaryTree"> Binary Tree</option>
-        </select>
-
-    </div>
- 
-
-
-   
-</body>
+  </body>
 </html>

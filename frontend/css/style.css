@@ -1,3 +1,47 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+  background: #111;
+  color: white;
+}
+
+#appContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#mainContent {
+  flex: 1;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+#topBar {
+  display: flex;
+  justify-content: flex-end;
+  background: #222;
+  padding: 10px 20px;
+  gap: 10px;
+  z-index: 10;
+}
+#topBar button {
+  background: #ff5722;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+#topBar button:hover {
+  background: #e64a19;
+}
+
 .camera-container {
   display: flex;
   flex-direction: column;
@@ -20,26 +64,14 @@
   background: black;
 }
 
-#controls {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+#cameraContainer {
+  width: 300px;
+  background: #222;
+  padding: 10px;
+  box-sizing: border-box;
   display: flex;
-  gap: 10px;
-}
-
-#controls buttons {
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-#controls button:hover {
-  background-color: #555;
+  flex-direction: column;
+  align-items: center;
 }
 
 #toggleCamera {
@@ -65,7 +97,7 @@
   transform: translate(-50%, -50%);
   width: 300px;
   padding: 20px;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   color: white;
   text-align: center;
   font-size: 20px;
@@ -73,7 +105,6 @@
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
   display: none;
 }
-
 #winMenu button {
   margin-top: 10px;
   padding: 10px 20px;
@@ -84,34 +115,80 @@
   border-radius: 5px;
   cursor: pointer;
 }
-
 #winMenu button:hover {
   background-color: darkgoldenrod;
 }
 
-#mazeSwitch {
-  position: absolute;
-  top: 10px;
-  right: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.5);
-  padding: 10px 15px;
-  border-radius: 5px;
+#mazeSettings {
+  width: 300px;
+  background: #222;
   color: white;
-  z-index: 999;
-  justify-content: center;
-  display: flex;
-  align-items: center;
-  width: auto;
-  white-space: nowrap;
+  padding: 15px;
+  box-sizing: border-box;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+#mazeSettings.closed {
+  width: 40px;
 }
 
-#mazeAlgo {
-  background: white;
-  color: black;
-  padding: 5px;
+#toggleSettings {
+  cursor: pointer;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-size: 20px;
+  text-align: center;
+  padding: 10px 5px;
+  background-color: #333;
+  border-right: 2px solid #555;
+}
+
+#settingsContent {
+  margin-top: 20px;
+  display: none;
+}
+
+#mazeSettings:not(.closed) #settingsContent {
+  display: block;
+}
+
+.camera-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#cameraFeed {
+  width: 320px;
+  height: 240px;
+  border: 2px solid white;
+  border-radius: 5px;
+  background: black;
+}
+
+#toggleCamera {
+  margin-top: 10px;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: bold;
+  background: #ff5722;
+  color: white;
   border: none;
   cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+#toggleCamera:hover {
+  background: #e64a19;
 }
 
 /*# sourceMappingURL=style.css.map */

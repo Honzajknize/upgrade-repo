@@ -5,13 +5,20 @@ import Player from './player.js';
 export class Game {
 
  constructor() {
-    console.log("✅ Hra inicializována!");
+    console.log(" Hra inicializována!");
      this.scene = new THREE.Scene();
      
-     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
      this.renderer = new THREE.WebGLRenderer();
      this.renderer.setSize(window.innerWidth, window.innerHeight);
-     document.body.appendChild(this.renderer.domElement);
+     //document.body.appendChild(this.renderer.domElement);
+
+     const gameContainer = document.getElementById("gameContainer");
+     if (gameContainer) {
+        gameContainer.appendChild(this.renderer.domElement);
+     }else {
+        console.error("Element #gameContainer nebyl nalezen!");
+     }
 
     //podlaha
     const floorGeometry = new THREE.PlaneGeometry(50,50);
@@ -32,6 +39,7 @@ export class Game {
      this.createMaze();
 
      this.createPlayer();
+     this.addWinMenuListeners();
      
 
      //player
@@ -78,6 +86,9 @@ export class Game {
 
  updateCamera() {
      //Nastavení kamery nad háčem 
+
+     
+    
      const cameraHeight = 5;
      const cameraOffsetZ = -3;
      
@@ -88,10 +99,11 @@ export class Game {
      );
 
      this.camera.lookAt(this.player.mesh.position);
+     
  }
 
  createMaze() {
-    console.log("🔄 Generování bludiště pomocí:", this.selectedAlgorithm);
+    console.log(" Generování bludiště pomocí:", this.selectedAlgorithm);
    
     this.maze = new Maze(this.mazeSize, this.wallSize,2,
         this.selectedAlgorithm); 
@@ -102,6 +114,15 @@ export class Game {
     this.player = new Player(this, this.scene, this.maze, this.wallSize, 2);
     window.player = this.player;
     console.log(" Hráč inicializován:", this.player);
+
+    const restartBtn =document.getElementById("restartGame");
+    if (restartBtn) {
+        restartGame.addEventListener("click", () => {
+            this.restartGame();
+        });
+    }
+
+   
  }
 
  showWinMenu() {
@@ -115,7 +136,8 @@ export class Game {
 
  restartGame() {
     document.getElementById("winMenu").style.display = "none";
-    game.resetMaze();
+    
+    this.resetMaze();
 }
 
 
@@ -126,8 +148,27 @@ export class Game {
      this.maze.removeFromScene(this.scene);
      this.createMaze();
      this.createPlayer();
-     this.maze.build(this.scene);
-     this.player.resetPosition();
+
+     setTimeout(() => {
+        if (this.player && this.player.mesh) {
+            this.player.resetPosition();
+        } else {
+            console.error("Chyba: Hráč nebyl vytvořen při resetu bludiště.");
+        }
+     },200);
+     //this.maze.build(this.scene);
+     //this.player.resetPosition();
+ }
+
+ addWinMenuListeners() {
+    const restartBtn = document.getElementById("restartGame");
+    if (restartBtn) {
+        restartBtn.addEventListener("click", () => {
+            this.restartGame();
+        });
+    } else {
+        console.warn("Tlačítko #restartGame nebylo nalezeno.");
+    }
  }
      
 
@@ -135,9 +176,14 @@ export class Game {
  animate(){
      requestAnimationFrame(() => this.animate());
      
+     if (this.player && this.player.mesh) {
+        this.player.update();
+        this.updateCamera();
 
-     this.player.update();
-     this.updateCamera();
+     } else {
+        console.warn(" Upozornění: Hráč není ještě inicializován, skippin update..");
+     }
+    
      this.renderer.render(this.scene, this.camera);
  }
 

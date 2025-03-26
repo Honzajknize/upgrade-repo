@@ -1,0 +1,36 @@
+@use 'variables' as *;
+#mazeSettings {
+    width: 300px;
+    background: #222;
+    color: white;
+    padding: 15px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease;
+    position: relative;
+  
+    &.closed {
+      width: 40px;
+    }
+  }
+  
+  #toggleSettings {
+    cursor: pointer;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 20px;
+    text-align: center;
+    padding: 10px 5px;
+    background-color: #333;
+    border-right: 2px solid #555;
+  }
+  
+  #settingsContent {
+    margin-top: 20px;
+    display: none;
+  }
+  
+  #mazeSettings:not(.closed) #settingsContent {
+    display: block;
+  }
+  
