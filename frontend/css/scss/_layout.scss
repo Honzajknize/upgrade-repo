@@ -25,9 +25,11 @@ html, body {
   }
 
   #gameContainer {
-    width: 60%;
+    flex: 1 1 auto;
+    max-width: 60%;
+    height: 100%;
     position: relative;
-    overflow: hidden;
+    
 
     canvas {
       width: 100%;

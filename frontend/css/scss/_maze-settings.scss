@@ -1,6 +1,7 @@
 @use 'variables' as *;
 #mazeSettings {
     width: 20%;
+    min-width: 250px;
     background: #222;
     color: white;
     padding: 15px;

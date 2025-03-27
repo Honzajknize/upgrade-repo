@@ -42,7 +42,7 @@ export class Game {
      this.addWinMenuListeners();
     
    
-     this.camera.position.set(this.mazeSize, 10, this.mazeSize);
+     this.camera.position.set(this.mazeSize, 0.1, this.mazeSize);
      console.log("Hráč inicializován:", this.player);
      this.camera.lookAt(this.player.mesh.position);
    
