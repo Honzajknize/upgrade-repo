@@ -92,6 +92,8 @@ async loadShaders(vertexPath,fragmentPath) {
 }
 
 
+
+
 initControls(){
     this.keys = {}; //objekt pro sledování stisknutých kláves
 
@@ -122,20 +124,19 @@ initControls(){
         */
 
 setStartPosition(){
-    if(!this.mesh) {
+    if(!this.mesh || !this.maze.startPosition) {
         console.error(" Chyba: `startPosition` není definována v bludišti.");
         return;
     }
-    if(!this.maze.startPosition) {
-        console.error(" Chyba: startPosition není definovánaa v bludisti.");
-        
-        return;
-    }
+    
+    const offsetX = this.maze.offsetX || 0;
+    const offsetZ = this.maze.offsetZ || 0;
+
 
    this.mesh.position.set(
-        this.maze.startPosition.x * this.wallSize,
+        offsetX + this.maze.startPosition.x * this.wallSize,
         0.5,
-        this.maze.startPosition.y * this.wallSize
+        offsetZ + this.maze.startPosition.y * this.wallSize
    );
 
    console.log(` Hráč se spawnul na start X=${this.mesh.position.x}, Z=${this.mesh.position.z}`);
@@ -185,8 +186,13 @@ update(deltaTime) {
        const futureX = newX + Math.sign(moveX) * 0.3;//maly offset pro lepsi detekci
        const futureZ = newZ + Math.sign(moveZ) * 0.3;
 
+       //outOfBounds zdi
+
+        const isOut = this.maze.isOutOfBounds(newX, newZ);
+
+        
        
-        if (!this.maze.isWall(futureX,futureZ)) {
+        if (!this.maze.isWall(futureX,futureZ) && !isOut) {
             this.mesh.position.set(newX, this.mesh.position.y, newZ);
             
         }

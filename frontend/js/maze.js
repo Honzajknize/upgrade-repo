@@ -1,5 +1,5 @@
   import * as THREE from '../../knihovny/threejs/three.module.js';
- // v Současné době Primův alogritmus
+ // v Současné době Primův alogritmus test
  export class Maze {
      constructor(size, wallSize, corridorSize, algorithm = "binaryTree") {
          this.size = size;
@@ -159,6 +159,9 @@
      build(scene) {
         console.log(" Stavím nové bludiště...");
 
+        const offsetX = - (this.size * this.corridorSize) / 2;
+        const offsetZ = - (this.size * this.corridorSize) / 2;
+
         this.walls = [];
 
         for(let y = 0; y < this.grid.length; y++) {
@@ -170,9 +173,9 @@
 
                     //Korekce umístění zdí
                     wall.position.set(
-                        x * this.corridorSize,
+                        offsetX + x * this.corridorSize,
                         this.wallSize / 2,
-                        y* this.corridorSize
+                         offsetZ + y* this.corridorSize
                         );
                     scene.add(wall);
                     this.walls.push(wall);
@@ -184,10 +187,48 @@
         const goalGeometry = new THREE.BoxGeometry(this.corridorSize * 0.8, 0.2, this.corridorSize * 0.8);
         const goalMaterial = new THREE.MeshStandardMaterial({ color: 0xFFD700 });
         this.goal = new THREE.Mesh(goalGeometry, goalMaterial);
-        this.goal.position.set(this.goalPosition.x * this.wallSize, 0.1, this.goalPosition.y * this.wallSize);
+        this.goal.position.set(
+            offsetX + this.goalPosition.x * this.wallSize, 0.1,
+            offsetZ + this.goalPosition.y * this.wallSize);
         scene.add(this.goal);
 
+        this.offsetX = offsetX;
+        this.offsetZ = offsetZ;
+
+        //Neviditelné super zdi okolo vykreslené plochy
+        const wallGeo = new THREE.BoxGeometry(1,5, this.size * this.corridorSize);
+        const wallGeoZ = new THREE.BoxGeometry(this.size * this.corridorSize, 5,1);
+        const invisibleMat = new THREE.MeshStandardMaterial({ color: 0x000000, transparent: true, opacity: 0 });
+
+        const half = (this.size * this.corridorSize) / 2;
+
+        //levá zed
+        const wallLeft = new THREE.Mesh(wallGeo, invisibleMat);
+        wallLeft.position.set(this.offsetX - 0.5, 2.5, 0);
+        scene.add(wallLeft);
+
+        
+        // Pravá zed
+        const wallRight = new THREE.Mesh(wallGeo, invisibleMat);
+        wallRight.position.set(this.offsetX + this.size * this.corridorSize - 0.5, 2.5, 0);
+        scene.add(wallRight);
+
+        // Horní zed
+        const wallTop = new THREE.Mesh(wallGeoZ, invisibleMat);
+        wallTop.position.set(0, 2.5, this.offsetZ - 0.5);
+        scene.add(wallTop);
+
+        // Dolní zed
+        const wallBottom = new THREE.Mesh(wallGeoZ, invisibleMat);
+        wallBottom.position.set(0, 2.5, this.offsetZ + this.size * this.corridorSize - 0.5);
+        scene.add(wallBottom);
+
+        
+
      }
+
+    
+
 
      isCheckpoint(x, z) {
         const gridX = Math.floor(x / this.wallSize);
@@ -220,6 +261,19 @@
             
     }
 
+    isOutOfBounds(x, z) {
+        const buffer = this.corridorSize * 3;
+
+
+        const minX = this.offsetX - this.corridorSize; // o něco větší rádius
+        const maxX = this.offsetX + this.size * this.corridorSize + buffer;
+        const minZ = this.offsetZ - this.corridorSize;
+        const maxZ = this.offsetZ + this.size * this.corridorSize + buffer;
+    
+        return x < minX || x > maxX || z < minZ || z > maxZ;
+    }
+    
+
     resetMaze() {
         console.log(" Reset bludiště...");
 
@@ -240,6 +294,9 @@
         }
         
     }
+
+    
+
 
 }
         export default Maze;
