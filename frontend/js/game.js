@@ -32,7 +32,7 @@ export class Game {
      this.wallSize = 1;
      this.corridorSize = 3;
      this.mazeSize = 45; //predtim bylo 15*
-     this.selectedAlgorithm = "silkroad";
+     this.selectedAlgorithm = "binaryTree";
 
      //světlo
      this.setupLights();

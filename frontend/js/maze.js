@@ -29,6 +29,7 @@
      generateBinaryTree() {
 
         console.log("Generování bludiště pomocí Binary Tree Maze...");
+        // 1) vypln cesty
         for (let y = 1; y < this.size; y+= 2) {
             for(let x = 1; x < this.size; x += 2) {
                 this.grid[y][x] = 0;
@@ -42,10 +43,19 @@
                 }
             }
         }
-        this.startPosition = {x: 1, y:1};
+        //2) 
+        this.startPosition = {x: 1, y:0};
+        this.grid[0][1] = 0;
+        
+        //3 cil
         this.goalPosition = { x: this.size -2, y: this.size -2 };
+        this.grid[this.goalPosition.y][this.goalPosition.x] = 0;
         console.log(`Start: X=${this.startPosition.x}, Y=${this.startPosition.y}`);
         console.log(`Cíl: X=${this.goalPosition.x}, Y=${this.goalPosition.y}`);
+        //4)
+        if (this.goalPosition.y + 1 < this.size) {
+            this.grid[this.goalPosition.y + 1][this.goalPosition.x] = 0;
+        }
    
      }
 
@@ -312,39 +322,40 @@
         const goalMaterial = new THREE.MeshStandardMaterial({ color: 0xFFD700 });
         this.goal = new THREE.Mesh(goalGeometry, goalMaterial);
         this.goal.position.set(
-            offsetX + this.goalPosition.x * this.wallSize, 0.1,
-            offsetZ + this.goalPosition.y * this.wallSize);
+            offsetX + this.goalPosition.x * this.corridorSize, 0.1,
+            offsetZ + this.goalPosition.y * this.corridorSize);
         scene.add(this.goal);
 
         this.offsetX = offsetX;
         this.offsetZ = offsetZ;
 
         //Neviditelné super zdi okolo vykreslené plochy
-        const wallGeo = new THREE.BoxGeometry(1,5, this.size * this.corridorSize);
-        const wallGeoZ = new THREE.BoxGeometry(this.size * this.corridorSize, 5,1);
+        const extendedSize = (this.size + 2) * this.corridorSize;
+        const wallGeo = new THREE.BoxGeometry(1,5, extendedSize);
+        const wallGeoZ = new THREE.BoxGeometry(extendedSize, 5,1);
         const invisibleMat = new THREE.MeshStandardMaterial({ color: 0x000000, transparent: true, opacity: 0 });
 
         const half = (this.size * this.corridorSize) / 2;
 
         //levá zed
         const wallLeft = new THREE.Mesh(wallGeo, invisibleMat);
-        wallLeft.position.set(this.offsetX - 0.5, 2.5, 0);
+        wallLeft.position.set(this.offsetX - this.corridorSize / 2, 2.5, 0);
         scene.add(wallLeft);
 
         
         // Pravá zed
         const wallRight = new THREE.Mesh(wallGeo, invisibleMat);
-        wallRight.position.set(this.offsetX + this.size * this.corridorSize - 0.5, 2.5, 0);
+        wallRight.position.set(this.offsetX + (this.size + 1) * this.corridorSize + this.corridorSize / 2 - 1, 2.5, 0);
         scene.add(wallRight);
 
         // Horní zed
         const wallTop = new THREE.Mesh(wallGeoZ, invisibleMat);
-        wallTop.position.set(0, 2.5, this.offsetZ - 0.5);
+        wallTop.position.set(0, 2.5, this.offsetZ - this.corridorSize / 2);
         scene.add(wallTop);
 
         // Dolní zed
         const wallBottom = new THREE.Mesh(wallGeoZ, invisibleMat);
-        wallBottom.position.set(0, 2.5, this.offsetZ + this.size * this.corridorSize - 0.5);
+        wallBottom.position.set(0, 2.5, this.offsetZ + (this.size + 1) * this.corridorSize + this.corridorSize / 2 -1);
         scene.add(wallBottom);
 
         
