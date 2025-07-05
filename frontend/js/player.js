@@ -21,7 +21,7 @@ constructor(game, scene, maze, wallSize, corridorSize) {
     window.player = this; //Globální přístu pro face-detections.js -umožnuje posílat pohyb
 
     //kulička
-    this.geometry = new THREE.SphereGeometry(0.5,32,32);
+    this.geometry = new THREE.SphereGeometry(0.25,32,32);
 
     //TEST SHADERU
     /*this.loadShaders("../shadery/SpaceSpore.vs", "../shadery/SpaceSpore.fs").then(material => {

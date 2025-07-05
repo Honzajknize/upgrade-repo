@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const size = parseInt(document.getElementById("mazeSize").value);
             const difficulty = parseInt(document.getElementById("mazeDifficulty").value);
             const algorithm = document.getElementById("mazeAlgo").value;
+            
 
             console.log(`Generování s: shape=${shape}, size=${size}, difficulty=${difficulty}, algo=${algorithm}`);
 

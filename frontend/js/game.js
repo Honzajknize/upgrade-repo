@@ -8,7 +8,7 @@ export class Game {
     console.log(" Hra inicializována!");
      this.scene = new THREE.Scene();
      
-    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
      this.renderer = new THREE.WebGLRenderer();
      this.renderer.setSize(window.innerWidth, window.innerHeight);
      //document.body.appendChild(this.renderer.domElement);
@@ -30,8 +30,9 @@ export class Game {
 
     //velikosti bludiště
      this.wallSize = 1;
-     this.mazeSize = 15;
-     this.selectedAlgorithm = "binaryTree";
+     this.corridorSize = 3;
+     this.mazeSize = 45; //predtim bylo 15*
+     this.selectedAlgorithm = "silkroad";
 
      //světlo
      this.setupLights();
@@ -64,6 +65,9 @@ export class Game {
       document.addEventListener('keydown', (event) => {
         if (event.key.toLowerCase() === 'c') {
             this.maze.toggleCollisions();
+        }
+        if(event.key.toLowerCase() === 'p') {
+            this.maze.toggleDebugViewMode();
         }
       });
    
@@ -102,9 +106,10 @@ export class Game {
  createMaze() {
     console.log(" Generování bludiště pomocí:", this.selectedAlgorithm);
    
+
     this.maze = new Maze(this.mazeSize,
          this.wallSize,
-         this.wallSize,
+         this.corridorSize,
          this.selectedAlgorithm); 
     this.maze.build(this.scene);
  }

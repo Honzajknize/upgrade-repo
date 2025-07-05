@@ -1,26 +1,33 @@
   import * as THREE from '../../knihovny/threejs/three.module.js';
  // v Současné době Primův alogritmus test
  export class Maze {
-     constructor(size, wallSize, corridorSize, algorithm = "binaryTree") {
+     constructor(size, wallSize, corridorSize, algorithm = "silkroad") {
          this.size = size;
          this.wallSize = wallSize;
-         this.corridorSize = corridorSize;
+         this.corridorSize = wallSize;
          this.algorithm = algorithm;
          this.grid = Array.from({ length: size }, () => Array(size).fill(1));
          this.walls = [];
-         //this.generatePrimMaze();
-         this.collisionEnabled = true;
          
-        if(this.algorithm === "binaryTree") {
+         this.collisionEnabled = true;
+         this.debugMode = false;
+         
+        if(this.algorithm === "silkroad") {
+            //this.generateSilkRoadMaze();
             this.generateBinaryTree();
         } else if (this.algorithm === "prim") {
             this.generatePrim();
-        } else {
+        } else if (this.algorithm === "binaryTree") {
+            this.generateBinaryTree();
+        }else {
             console.error("Neznámý algoritmus!");
+        
+            
         }
      }
-
+//maze generation methods
      generateBinaryTree() {
+
         console.log("Generování bludiště pomocí Binary Tree Maze...");
         for (let y = 1; y < this.size; y+= 2) {
             for(let x = 1; x < this.size; x += 2) {
@@ -84,11 +91,116 @@
         
      }
 
+     generateSilkRoadMaze(){
+        console.log ("silkroad maze");
+        //1) vytvorime prazdny grid 
+        this.grid = Array.from({ length: this.size }, () => Array(this.size).fill(0));
+        this.startPosition = { x: 1, y: 1 };
+        this.goalPosition = { x: this.size - 2, y: this.size - 2 };
+    
+        const mountainCount = Math.floor(this.size / 4);
+        const mountainCenters = [];
+    
+        // Náhodně umísti mountain centry
+        while (mountainCenters.length < mountainCount) {
+            const x = Math.floor(Math.random() * (this.size - 2)) + 1;
+            const y = Math.floor(Math.random() * (this.size - 2)) + 1;
+            if (this.grid[y][x] === 0 && !(x === this.startPosition.x && y === this.startPosition.y) && !(x === this.goalPosition.x && y === this.goalPosition.y)) {
+                mountainCenters.push({ x, y });
+            }
+        }
+    
+        // Spusť chapadla z každého centra
+        for (const { x, y } of mountainCenters) {
+            this.spreadWallTentacles(x, y);
+        }
+    
+        // Poté vytvoř průchozí SilkRoad path
+        const silkroadPath = this.generateSilkRoad(this.startPosition, this.goalPosition);
+        for (const { x, y } of silkroadPath) {
+            this.grid[y][x] = 0;
+        }
+    
+        console.log(`Silkroad Maze hotovo: Start (${this.startPosition.x}, ${this.startPosition.y}), Cíl (${this.goalPosition.x}, ${this.goalPosition.y})`);
+    
+
+
+     }
+
+     spreadWallTentacles(cx,cy) {
+       const tentacleCount = Math.floor(Math.random() * 4) + 3; //3-6
+       const angleStep = (2* Math.PI) /tentacleCount;
+
+       for(let i = 0; i < tentacleCount; i++) {
+        let angle = i * angleStep + (Math.random() -0.5) * 0.5;
+        let dx = Math.round(Math.cos(angle));
+        let dy = Math.round(Math.sin(angle));
+
+        let x = cx;
+        let y = cy;
+        const maxSteps = Math.floor(this.size / 2);
+
+         for(let j = 0; j < maxSteps; j++) {
+            x += dx;
+            y += dy;
+
+            if(!this.isInBounds(x,y)) break;
+            if (this.grid[y][x] === 1) continue;
+            this.grid[y][x] = 1;
+
+            //šance na zatočení
+            if(Math.random() < 0.3) {
+                angle += (Math.random() -0.5) * (Math.PI / 6);
+                dx = Math.round(Math.cos(angle));
+                dy = Math.round(Math.sin(angle));
+            }
+         }
+        } 
+    }
+    isInBounds(x,y) {
+        return x >= 0 && x < this.size && y >= 0 && y < this.size;
+    }
+    
+
+     generateSilkRoad(start, goal) {
+        const visited = new Set();
+    const path = [];
+    const stack = [{ x: start.x, y: start.y, path: [] }];
+
+    while (stack.length > 0) {
+        const current = stack.pop();
+        const key = `${current.x},${current.y}`;
+        if (visited.has(key)) continue;
+        visited.add(key);
+
+        const newPath = [...current.path, { x: current.x, y: current.y }];
+        if (current.x === goal.x && current.y === goal.y) return newPath;
+
+        const dirs = [
+            [1, 0], [-1, 0], [0, 1], [0, -1]
+        ];
+
+        for (const [dx, dy] of dirs) {
+            const nx = current.x + dx;
+            const ny = current.y + dy;
+            if (this.isInBounds(nx, ny) && !visited.has(`${nx},${ny}`)) {
+                stack.push({ x: nx, y: ny, path: newPath });
+            }
+        }
+    }
+    
+    console.warn("Silkroad path nebyla nalezena. Vrací se přímka jako fallback.");
+    return [{ x: start.x, y: start.y }, { x: goal.x, y: goal.y }];
+
+    }
+
+
      isWall(x, z) {
     if (!this.collisionEnabled) return false;
 
-        const gridX = Math.floor(x / this.corridorSize);
-        const gridZ = Math.floor(z / this.corridorSize);
+    //přidal jsem + this.corridorSize /2 protože kolize to tvořilo od středu zdí
+        const gridX = Math.floor((x - this.offsetX + this.corridorSize / 2) / this.corridorSize);
+        const gridZ = Math.floor((z - this.offsetZ + this.corridorSize / 2) / this.corridorSize);
 
         if (gridZ < 0 || gridZ >= this.grid.length || gridX < 0 || gridX >= this.grid[0].length) {
             return true; //pokud je mimo rozsah beru ot jako zed
@@ -126,9 +238,7 @@
         return count === 1; //pouze jedno otevřené sousedství
      }
 
-     isInBounds(x,y) {
-        return x > 0 && y > 0 && x < this.size - 1 && y <this.size - 1;
-     }
+    
 
      findFarthestPoint(sx,sy) {
         let maxDist = 0;
@@ -167,7 +277,21 @@
         for(let y = 0; y < this.grid.length; y++) {
             for (let x = 0; x < this.grid[y].length; x++) {
                 if (this.grid[y][x] === 1) {
-                    const wallGeometry = new THREE.BoxGeometry(this.wallSize,this.wallSize, this.wallSize);
+                    //debug clauzule
+                    if (this.debugMode) {
+                        const debugGeometry = new THREE.BoxGeometry(this.corridorSize * 0.8, 0.1, this.corridorSize * 0.8);
+                        const debugMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00, transparent: true, opacity: 0.2 });
+                        const debugMesh = new THREE.Mesh(debugGeometry, debugMaterial);
+                        debugMesh.position.set(
+                            offsetX + x * this.corridorSize,
+                            0.05,
+                            offsetZ + y * this.corridorSize
+                        );
+                        scene.add(debugMesh);
+                        this.walls.push(debugMesh); // přidáme ho do walls, aby šel pak odstranit
+                    }
+                    
+                    const wallGeometry = new THREE.BoxGeometry(this.corridorSize,this.wallSize, this.corridorSize);
                     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000});
                     const wall = new THREE.Mesh(wallGeometry, wallMaterial);
 
@@ -231,8 +355,8 @@
 
 
      isCheckpoint(x, z) {
-        const gridX = Math.floor(x / this.wallSize);
-        const gridZ = Math.floor(z / this.wallSize);
+        const gridX = Math.floor(( x - this.offset) / this.wallSize);
+        const gridZ = Math.floor(( z - this.offset) / this.wallSize);
 
         return gridX === this.goalPosition.x && gridZ === this.goalPosition.y;
         }
@@ -296,7 +420,10 @@
     }
 
     
-
+toggleDebugViewMode() {
+    this.debugMode = !this.debugMode;
+    console.log(`Debug mód ${this.debugMode ? "zapnutý" : "vypnutý"}`);
+}
 
 }
         export default Maze;
