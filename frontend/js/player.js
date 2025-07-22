@@ -158,9 +158,16 @@ destroy() {
    this.trails = [];
 }
 
-
+freeze() {
+    this.frozen = true;
+}
+unfreeze() {
+    this.frozen = false;
+}
 
 update(deltaTime) {
+   if(this.frozen)return;
+
    
     let moveX = this.moveX || 0;
     let moveZ = this.moveZ || 0;
@@ -191,23 +198,53 @@ update(deltaTime) {
         const isOut = this.maze.isOutOfBounds(newX, newZ);
 
         
-       
-        if (!this.maze.isWall(futureX,futureZ) && !isOut) {
+
+        //wall sliding
+        if (!this.maze.isWall(futureX, futureZ) && !isOut) {
             this.mesh.position.set(newX, this.mesh.position.y, newZ);
-            
+        } else {
+            let slid = false;
+
+            //test jen ve smeru x (vodorovně)
+            const tryX = this.mesh.position.x + moveX;
+            const futureOnlyX = tryX + Math.sign(moveX) * 0.3;
+
+            if(
+                !this.maze.isWall(futureOnlyX, this.mesh.position.z) && 
+                !this.maze.isOutOfBounds(tryX, this.mesh.position.z)) {
+                this.mesh.position.x = tryX;
+                slid = true;
+            }
+
+            //Zkus jen ve směru Z (svisle)
+            const tryZ = this.mesh.position.z + moveZ;
+            const futureOnlyZ = tryZ + Math.sign(moveZ) * 0.3;
+            if (!this.maze.isWall(this.mesh.position.x, futureOnlyZ) && !this.maze.isOutOfBounds(this.mesh.position.x, tryZ))
+            {
+                this.mesh.position.z = tryZ;
+                slid  = true;
+            }
+            // if (slid){}
         }
             
             
 
-        //this.mesh.position.x += newX;
-        //this.mesh.position.z += newZ;
+      
         
        
 
         //hrac dojel docile
-       if (this.maze.isCheckpoint(this.mesh.position.x, this.mesh.position.z)) {
-            this.game.showWinMenu();
+
+        const goal = this.maze.goalPosition;
+        const threshold = 0.5;
+
+      
+     if(this.maze.goal) {
+        const distance = this.mesh.position.distanceTo(this.maze.goal.position);
+        if (distance < 0.5) {
+            this.game.triggerWin();
         }
+     }
 
         //pokud hrac zmenil pozici pridej trail 
         if (Date.now() - this.lastTrailTime > 400) { // Přidává stopu každou vteřinu

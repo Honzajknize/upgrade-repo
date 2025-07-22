@@ -319,7 +319,11 @@
 
         //Cíl 
         const goalGeometry = new THREE.BoxGeometry(this.corridorSize * 0.8, 0.2, this.corridorSize * 0.8);
-        const goalMaterial = new THREE.MeshStandardMaterial({ color: 0xFFD700 });
+        const goalMaterial = new THREE.MeshStandardMaterial({
+             color: 0xFFD700,
+             transparent: true,
+             opacity: 50
+             });
         this.goal = new THREE.Mesh(goalGeometry, goalMaterial);
         this.goal.position.set(
             offsetX + this.goalPosition.x * this.corridorSize, 0.1,
@@ -366,10 +370,12 @@
 
 
      isCheckpoint(x, z) {
-        const gridX = Math.floor(( x - this.offset) / this.wallSize);
+        /*const gridX = Math.floor(( x - this.offset) / this.wallSize);
         const gridZ = Math.floor(( z - this.offset) / this.wallSize);
 
         return gridX === this.goalPosition.x && gridZ === this.goalPosition.y;
+        */
+    
         }
 
     removeFromScene(scene){
@@ -430,7 +436,19 @@
         
     }
 
-    
+ triggerWin(){
+    if(this.gameEnded) return;
+    this.gameEnded = true;
+    this.freezeGame();
+    setTimeout(() => {
+        this.showWinMenu();
+
+    },1000);
+    //this.freezeGame(); //zastaví update
+    //this.player.freeze();
+
+    //smooth zoom nebo efekt
+ }   
 toggleDebugViewMode() {
     this.debugMode = !this.debugMode;
     console.log(`Debug mód ${this.debugMode ? "zapnutý" : "vypnutý"}`);

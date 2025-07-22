@@ -129,6 +129,25 @@ export class Game {
    
  }
 
+ triggerWin() {
+    if (this.gameEnded) return;
+    this.gameEnded = true;
+    this.freezeGame();
+    setTimeout(() => {
+        this.showWinMenu();
+    },1000);
+ }
+
+ freezeGame(){
+    if(this.player) {
+        this.player.freeze();
+    }
+ }
+
+ freeze() {
+    this.frozen = true;
+ }
+
  showWinMenu() {
     const winMenu = document.getElementById("winMenu");
     if (winMenu) {
@@ -151,11 +170,11 @@ export class Game {
      //Odstranění objektů bludiště
      this.maze.removeFromScene(this.scene);
      this.createMaze();
-     if(this.player && this.player.mesh){
-        this.player.resetPosition();
-     } else {
-        this.createPlayer(); //fallback pokud hríč není
-     }
+     if(this.player) {
+        this.player.destroy();
+     } 
+        this.createPlayer(); //vytvoreni novyho player se spravnym ovladanim
+    
      
 
      setTimeout(() => {
