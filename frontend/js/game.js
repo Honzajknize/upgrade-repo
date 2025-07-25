@@ -147,6 +147,9 @@ export class Game {
  freeze() {
     this.frozen = true;
  }
+ unfreeze() {
+    this.frozen = false;
+ }
 
  showWinMenu() {
     const winMenu = document.getElementById("winMenu");

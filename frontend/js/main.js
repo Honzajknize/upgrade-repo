@@ -12,16 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
         toggleBtn.addEventListener("click", () => {
             panel.classList.toggle("closed");
         });
-    } else {
-        console.warn("Panel nebo tlačítko pro nastavení nebylo nalezeno.");
     }
 
 //reset button
     const resetButton = document.getElementById("resetMaze");
     if (resetButton) {
         resetButton.addEventListener("click", () => game.resetMaze());
-    } else {
-        console.warn("Reset tlačítko nebylo nalezeno.");
     }
 
     //Napojení na nastavení a generování
@@ -41,18 +37,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             game.resetMaze();
+// Resize fce pro canvas
+const container = document.getElementById("gameContainer");
+function resizeCanvas() {
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    if (game.renderer && game.camera) {
+        game.renderer.setSize(width, height,false);
+        game.renderer.setPixelRatio(window.devicePixelRatio);
+        game.camera.aspect = width / height;
+        game.camera.updateProjectionMatrix();
+    }
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
 
         });
-    } else {
-        console.warn("Tlačítko pro generování bludiště nebylo nalezeno.");
-    }   
+    }  
 });
 
+  //Fullscreen toggle
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const appContainer = document.getElementById("appContainer");
+  
+  if(fullscreenBtn && appContainer) {
+    fullscreenBtn.addEventListener("click", () => {
+        if(!document.fullscreenElement) {
+            appContainer.requestFullscreen().catch(err => console.error("Fullscreen error:", err));
+        } else {
+            document.exitFullscreen();
+        }
+    });
+  }
     
-    
 
 
 
-//new Game();
 

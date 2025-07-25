@@ -1,26 +1,25 @@
-let video;
+let video = document.getElementById('cameraFeed');
 let stream = null;
 let detecting = false;
 
 
-
 //věci pro vizuální prvky
-const videoContainer = document.createElement('div');
-    videoContainer.style.position = 'absolute';
-    videoContainer.style.top = '10px';
-    videoContainer.style.left = '10px';
-    videoContainer.style.width = '320px';
-    videoContainer.style.height = '240px';
-    videoContainer.style.border = '2px solid white';
-    videoContainer.style.overflow = 'hidden';
-    document.body.appendChild(videoContainer);
+const videoContainer = document.getElementById('cameraContainer');
+   // videoContainer.style.position = 'absolute';
+    //videoContainer.style.top = '10px';
+    //videoContainer.style.left = '10px';
+    //videoContainer.style.width = '320px';
+    //videoContainer.style.height = '240px';
+    //videoContainer.style.border = '2px solid white';
+    //videoContainer.style.overflow = 'hidden';
+    //document.body.appendChild(videoContainer);
 
     //video prvek
-    video = document.createElement('video');
-    video.style.width = '100%';
-    video.style.height = '100%';
-    video.autoplay = true;
-    videoContainer.appendChild(video);
+    //video = document.createElement('video');
+    //video.style.width = '100%';
+    //video.style.height = '100%';
+    //video.autoplay = true;
+    //videoContainer.appendChild(video);
 
     //Canvas pro kreslení rámečku
     const canvas = document.createElement('canvas');
@@ -29,6 +28,7 @@ const videoContainer = document.createElement('div');
     canvas.style.position = 'absolute';
     canvas.style.top = '0';
     canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
     videoContainer.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
@@ -68,8 +68,11 @@ button.addEventListener('click', async () => {
         console.log("Vypínám kameru...");
         stream.getTracks().forEach(track => track.stop());
         video.remove();
+        video.srcObject = null;
         stream = null;
         button.innerText = "Zapnout kameru";
+        ctx.clearRect(0,0, canvas.width, canvas.height);
+        movementText.innerText = "";
     }
 });
 
@@ -188,27 +191,5 @@ function processFacePosition(detections) {
         movementText.innerText = " Bez pohybu";
     }
 
-
-
-
-    /*if (Math.abs(offsetX) > threshold) {
-        const adjustedSpeed = Math.min(Math.abs(offsetX) * 0.005,0.5); //Dynamická rychlost
-        if (offsetX > 0) {
-                window.player.moveX = adjustedSpeed;
-                movementText.innerText = " Pohyb: vpravo";
-            
-        } else {
-                window.player.moveX = -adjustedSpeed; // Nastavení moveX
-                movementText.innerText = "Pohyb: vlevo";
-            
-        }
-    }
-    else {
-        
-            window.player.moveX = 0; // Pokud je hlava skoro uprostřed, zastavíme kuličku
-            movementText.innerText = " bez pohybu";
-    
-    }*/
-
-   
+ 
 }

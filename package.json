@@ -1,8 +1,21 @@
 {
+  "name": "bakalarska_prace_jan_kratky_2025",
+  "version": "0.5",
+  "dependencies": {
+    "face-api.js": "^0.22.2"
+  },
   "devDependencies": {
     "jest": "^29.7.0"
   },
-  "dependencies": {
-    "face-api.js": "^0.22.2"
-  }
+  "scripts": {
+  "watch-css": "sass --watch frontend/css/scss/main.scss frontend/css/style.css",
+  "build-css": "sass frontend/css/scss/main.scss frontend/css/style.css"
 }
+
+}
+
+  
+  
+ 
+
+

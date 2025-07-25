@@ -3,8 +3,12 @@
 @use 'camera';
 @use 'controls';
 @use 'winmenu';
-@use 'maze-settings';
+//@use 'maze-settings';
+@use 'mixins';
 
+
+
+/*
 //Kontejner pro kameru a tlačítko
 .camera-container {
     display: flex;
@@ -47,4 +51,4 @@
     }
 
 }
-
+*/

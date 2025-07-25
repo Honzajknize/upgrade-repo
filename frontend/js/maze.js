@@ -322,7 +322,7 @@
         const goalMaterial = new THREE.MeshStandardMaterial({
              color: 0xFFD700,
              transparent: true,
-             opacity: 50
+             opacity: 0.3
              });
         this.goal = new THREE.Mesh(goalGeometry, goalMaterial);
         this.goal.position.set(
@@ -436,19 +436,7 @@
         
     }
 
- triggerWin(){
-    if(this.gameEnded) return;
-    this.gameEnded = true;
-    this.freezeGame();
-    setTimeout(() => {
-        this.showWinMenu();
-
-    },1000);
-    //this.freezeGame(); //zastaví update
-    //this.player.freeze();
-
-    //smooth zoom nebo efekt
- }   
+   
 toggleDebugViewMode() {
     this.debugMode = !this.debugMode;
     console.log(`Debug mód ${this.debugMode ? "zapnutý" : "vypnutý"}`);

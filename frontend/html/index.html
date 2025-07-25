@@ -8,6 +8,7 @@
     <script type="module" src="../js/main.js"></script>
     <script defer src="/knihovny/faceapijs/face-api.min.js"></script>
     <script defer src="../js/face-detection.js"></script>
+    <!-- CSS -->
     <link rel="stylesheet" href="../css/style.css">
 
 </head>
@@ -18,8 +19,11 @@
       <div id="topBar">
         <button id="toggleCamera">Zapnout kameru</button>
         <button id="resetMaze">Refresh</button>
+        <button id="fullscreenBtn">[ ]</button>
       </div>
-  
+  <!-- wrapper-->
+   <div id="innerPanel">
+
       <!-- Hlavní obsah -->
       <div id="mainContent">
   
@@ -31,8 +35,9 @@
         <!-- Hra uprostřed -->
         <div id="gameContainer"></div>
   
-        <!-- Panel nastavení vpravo -->
-        <div id="mazeSettings" class="closed">
+        <!-- Panel nastavení vpravo  ZATIM neslouzi zadnemu funkcimu ucelu--> 
+       <!--
+         <div id="mazeSettings" class="closed">
           <div id="toggleSettings">&#9776;</div>
           <div id="settingsContent">
             <h3>Nastavení bludiště</h3>
@@ -60,6 +65,8 @@
             <button id="generateMaze">Generovat</button>
           </div>
         </div>
+        -->
+       
   
       </div>
   
@@ -70,5 +77,6 @@
       </div>
   
     </div>
+  </div>
   </body>
 </html>
