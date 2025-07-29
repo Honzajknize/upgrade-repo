@@ -47,9 +47,6 @@ constructor(game, scene, maze, wallSize, corridorSize) {
     this.trailInterval = 10; //po kolika update cyklech se vytvoří stopa
     this.trails = []; // pole pro uložení stop
 
-  
-
-   // this.player = new Player(this, this.scene, this.maze, this.wallSize, 2);
     
 
    
@@ -110,18 +107,6 @@ initControls(){
     document.addEventListener('keyup', this._handleKeyUp);
 }
    
-    /* document.addEventListener('keydown',
-         (event) => {
-            this.keys[event.key.toLowerCase()] = true;
-         });
-
-     document.addEventListener('keyup',
-         (event) => {
-            this.keys[event.key.toLowerCase()] = false;
-        });  
-         
-}
-        */
 
 setStartPosition(){
     if(!this.mesh || !this.maze.startPosition) {

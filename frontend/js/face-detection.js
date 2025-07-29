@@ -5,22 +5,6 @@ let detecting = false;
 
 //věci pro vizuální prvky
 const videoContainer = document.getElementById('cameraContainer');
-   // videoContainer.style.position = 'absolute';
-    //videoContainer.style.top = '10px';
-    //videoContainer.style.left = '10px';
-    //videoContainer.style.width = '320px';
-    //videoContainer.style.height = '240px';
-    //videoContainer.style.border = '2px solid white';
-    //videoContainer.style.overflow = 'hidden';
-    //document.body.appendChild(videoContainer);
-
-    //video prvek
-    //video = document.createElement('video');
-    //video.style.width = '100%';
-    //video.style.height = '100%';
-    //video.autoplay = true;
-    //videoContainer.appendChild(video);
-
     //Canvas pro kreslení rámečku
     const canvas = document.createElement('canvas');
     canvas.width = 320;
