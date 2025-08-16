@@ -7,13 +7,13 @@ DONE:
 - Pohyb skrze klávesnici i kameru 
 - Zobrazení scény a kuličky 
 - základní layout
+- UI
+- Binary Tree Maze
+
 
 TO DO:
--vylepšit bludiště (tohle je nevyhovující)
--kolize 
--layout finishing touches
-- UI 
--teorie
+- review a finishing touches
+- Úvod,závěr, termíny,přílohy, etc
 
 
 
