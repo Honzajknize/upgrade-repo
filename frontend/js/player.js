@@ -47,11 +47,6 @@ constructor(game, scene, maze, wallSize, corridorSize) {
     this.trailInterval = 10; //po kolika update cyklech se vytvoří stopa
     this.trails = []; // pole pro uložení stop
 
-    
-
-   
-    
-    
     this.initControls();
     this.setStartPosition();
 }
