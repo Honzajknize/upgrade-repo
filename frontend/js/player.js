@@ -23,20 +23,6 @@ constructor(game, scene, maze, wallSize, corridorSize) {
     //kulička
     this.geometry = new THREE.SphereGeometry(0.25,32,32);
 
-    //TEST SHADERU
-    /*this.loadShaders("../shadery/SpaceSpore.vs", "../shadery/SpaceSpore.fs").then(material => {
-        this.mesh = new THREE.Mesh(this.geometry, material);
-        scene.add(this.mesh);
-        if (this.mesh) {
-            this.setStartPosition();
-        } else {
-            console.error(" Chyba: this.mesh není vytvořen!");
-        } 
-    })
-    .catch(error => console.error("Chyba při načítání shaderů:", error));
-*/
-   // this.initControls();
-    //this.setStartPosition();
 
     this.material = new THREE.MeshStandardMaterial({ color: 0x00ffd5});
     this.mesh = new THREE.Mesh(this.geometry, this.material);

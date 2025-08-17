@@ -1,3 +1,9 @@
+
+const USE_SMOOTHING = false;
+const DRAW_EVERY_N = 2;
+let USE_TINY_LANDMARKS = true;
+const INPUT_SIZE = 160;
+
 let video = document.getElementById('cameraFeed');
 let stream = null;
 let detecting = false;
@@ -40,10 +46,13 @@ const button = document.getElementById('toggleCamera');
 
 button.addEventListener('click', async () => {
     if (!stream) {
-        //Zapnutí kamery
-      
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            stream = await navigator.mediaDevices.getUserMedia({ video: {
+                width: {ideal: 320},
+                height: {ideal: 240},
+                frameRate: { ideal: 30}
+            }
+         });
             video.srcObject = stream;
             await video.play();
             button.innerText = "Vypnout kameru";
@@ -95,8 +104,29 @@ button.addEventListener('click', async () => {
 //fce pro načtení modelů face-api.js
 async function loadModels() {
     console.log("Načítám modely...");
+try {
+console.log("TF backend před:", tf.getBackend());
+await tf.setBackend('webgl'); // pokus o GPU zpracování
+await tf.ready();
+console.log("TF backend po:", tf.getBackend());
+} catch (e) {
+    console.warn("Nepodařilo se nastavit WebGL backend, bežím na:", tf.getBackend());
+}
+
+
+    // tiny face detektor
     await faceapi.nets.tinyFaceDetector.loadFromUri('/knihovny/faceapijs/models');
-    await faceapi.nets.faceLandmark68Net.loadFromUri('/knihovny/faceapijs/models');
+    try {
+        await faceapi.nets.faceLandmark68TinyNet.loadfromUri('/knihovny/faceapijs/models')
+        USE_TINY_LANDMARKS = true;
+    console.log("Použity tiny landmarks");
+
+    } catch {
+        await faceapi.nets.faceLandmark68Net.loadFromUri('/knihovny/faceapijs/models');
+        USE_TINY_LANDMARKS = false;
+        console.log("Tiny landmarks nedostupné, použití full landmarks");
+    }
+   
     console.log("Modely načteny!");
 }
 
@@ -124,7 +154,11 @@ function syncOverlayToVideo() {
 //Detekce obličeje každých 100ms
 function startDetectFaceLoop() {
     if (detectCameraLoop) return; //check jestli už neběží loop
-  const options = new faceapi.TinyFaceDetectorOptions();
+  const options = new faceapi.TinyFaceDetectorOptions({
+    inputSize: 160,
+    scoreThreshold: 0.4
+  });
+  let drawCounter = 0;
 
   const loop = async () => {
     if (!detecting) return;
@@ -133,32 +167,43 @@ function startDetectFaceLoop() {
     if (video.readyState >= 2) {
       const detections = await faceapi
         .detectSingleFace(video, options)
-        .withFaceLandmarks();
+        .withFaceLandmarks(USE_TINY_LANDMARKS);
+        //defaulty pro obě větve
+        let outX = smX, outZ = smZ;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      
 
       if (detections) {
         //cíl z obličeje
         const {moveX, moveZ } = processFacePosition(detections);
 
         //vyhlazení + slew limit
-        let nextX = smX + ema *(moveX - smX);
-        let nextZ = smZ + ema * (moveZ - smZ);
-        const step = (current, next) =>
+        let outX, outZ;
+        if(USE_SMOOTHING) {
+          let nextX = smX + ema *(moveX - smX);
+          let nextZ = smZ + ema * (moveZ - smZ);
+          const step = (current, next) =>
              Math.abs(next - current) > maxStep ? current + Math.sign(next - current) * maxStep : next;
-        smX = step(smX, nextX);
-        smZ = step(smZ, nextZ);
+          smX = step(smX, nextX);
+          smZ = step(smZ, nextZ);
+          outX = smX; outZ = smZ;  
+        }else {
+            outX = moveX; outZ = moveZ;
+            smX = moveX; smZ = moveZ;
+        }
+        
       
         //kreslení boxu premapování souřadnic na aktuálně zobrazenou velikost videa
-        const displaySize = {width: video.clientWidth, height: video.clientHeight };
-        faceapi.matchDimensions(canvas, displaySize);
-        const resized = faceapi.resizeResults(detections, displaySize);
+       if (++drawCounter % 2 === 0) { //kreslí každý 2 frame pro úsporu
+         ctx.clearRect(0, 0, canvas.width, canvas.height);
+         const displaySize = {width: video.clientWidth, height: video.clientHeight };
+         faceapi.matchDimensions(canvas, displaySize);
+         const resized = faceapi.resizeResults(detections, displaySize);
+         //přesné vykreslení
+         faceapi.draw.drawDetections(canvas, resized);
+       }
 
-        //přesné vykreslení
-        faceapi.draw.drawDetections(canvas, resized);
-
-       
-     
     }else {
         //žádná detekce -> plynule dohasínat k nule
         smX *= friction;
@@ -166,11 +211,12 @@ function startDetectFaceLoop() {
         if (Math.abs(smX) < 0.001) smX = 0;
         if (Math.abs(smZ) < 0.001) smZ = 0;
         movementText.innerText = "Bez pohybu";
+        outX = smX; outZ = smZ;
     }
     //zapsání do playera jen když je hlava aktivní
     if (window.player) {
-        window.player.moveX = headEnabled ? smX : 0;
-        window.player.moveZ = headEnabled ? smZ : 0;
+        window.player.moveX = headEnabled ? outX : 0;
+        window.player.moveZ = headEnabled ? outZ : 0;
     }
 }
     detectCameraLoop = requestAnimationFrame(loop);
@@ -190,8 +236,8 @@ function processFacePosition(detections) {
     const offsetY = nose.y -faceCenterY;  //svislý pohyb
 
 
-    const threshold = 7; //min pohyb k pohybu kuličky
-    const maxSpeed = 0.5; //cap
+    const threshold = 3; //min pohyb k pohybu kuličky
+    const maxSpeed = 0.8; //cap
     const sensitivity = 0.05; //intenzita reakce na pohyb
 
     let moveX = 0;
