@@ -6,6 +6,8 @@ export class Game {
 
  constructor() {
     console.log(" Hra inicializována!");
+    this.gameEnded = false;
+    this.frozen = false;
      this.scene = new THREE.Scene();
      
     this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -119,12 +121,12 @@ export class Game {
     window.player = this.player;
     console.log(" Hráč inicializován:", this.player);
 
-    const restartBtn =document.getElementById("restartGame");
+    /*const restartBtn =document.getElementById("restartGame");
     if (restartBtn) {
-        restartGame.addEventListener("click", () => {
-            this.restartGame();
-        });
+        restartGame.restartBtn.addEventListener("click", () =>  this.restartGame());
+         
     }
+        */
 
    
  }
@@ -149,6 +151,9 @@ export class Game {
  }
  unfreeze() {
     this.frozen = false;
+    if(this.player && typeof this.player.unfreeze === 'function') {
+        this.player.unfreeze();
+   }
  }
 
  showWinMenu() {
@@ -161,9 +166,15 @@ export class Game {
  }
 
  restartGame() {
-    document.getElementById("winMenu").style.display = "none";
+    const win = document.getElementById("winMenu");
+    if (win) win.style.display = "none";
+    this.gameEnded = false; //aby hra mohla pokračovat znova
+    this.unfreeze();
+   /* document.getElementById("winMenu").style.display = "none";
+   */
     
     this.resetMaze();
+    
 }
 
 
