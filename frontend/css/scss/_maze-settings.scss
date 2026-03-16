@@ -21,6 +21,11 @@
       padding: 15px 6px;
       
     }
+    &.closed #settingsContent {
+      opacity: 0;
+      pointer-events: none;
+      display: none;
+    }
 
     h3 {
       margin-bottom: 10px;
@@ -53,16 +58,18 @@
   
   #toggleSettings {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 15px;
+    right: 15px;
     background: rgba(0, 0, 0, 0.5);
     color: white;
     //text-orientation: mixed;
     transform: rotate(180deg);
     font-size: 20px;
     text-align: center;
-    padding: 8px 10px;
-    border-radius: 8px;
+    padding: 4px;
+    margin-left: 10px;
+    margin-right: -6px;
+    border-radius: 4px;
     cursor: pointer;
 
     &:hover {
@@ -79,5 +86,6 @@
   &.closed #settingContent {
     display: none;
   }
+  
     
 }
