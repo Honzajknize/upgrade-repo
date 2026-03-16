@@ -45,10 +45,11 @@ html, body {
 }
 
 #mainContent {
-  display: contents;
+  display: flex;
   gap: 20px;
   height: 100%;
   width: 100%;
+  min-width: 0;
 }
 
 #gameContainer {
@@ -100,24 +101,38 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+#cameraContainer canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 #cameraFeed {
-  width: 90%;
+  width: 100%;
+  display: block;
   height: auto;
+  aspect-ratio: 4/3;
+  min-width: 320px;
+  min-height: 240px;
   max-height: 100%;
   border: 2px solid white;
   border-radius: 5px;
   background: black;
 }
 
-video {
+/*video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   background: black;
 }
-
+  */
 #topbar {
   display: flex;
   justify-content: flex-end;
@@ -170,6 +185,78 @@ video {
 }
 #winMenu button:hover {
   background-color: darkgoldenrod;
+}
+
+#mazeSettings {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  flex: 0 0 clamp(280px, 20vw, 340px);
+  width: clamp(280px, 20vw, 340px);
+  min-width: 280px;
+  max-width: 340px;
+  padding: 15px;
+  box-sizing: border-box;
+  transition: width 0.3 ease, transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+#mazeSettings.closed {
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  padding: 15px 6px;
+}
+#mazeSettings h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+#mazeSettings select, #mazeSettings input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  box-sizing: border-box;
+}
+#mazeSettings button {
+  width: 100%;
+  padding: 10px;
+  background: #8b5cf6;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+}
+#mazeSettings button:hover {
+  background: #a78bfa;
+}
+#mazeSettings #toggleSettings {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  transform: rotate(180deg);
+  font-size: 20px;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#mazeSettings #toggleSettings:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+#mazeSettings #settingsContent {
+  margin-top: 48px;
+  display: block;
+}
+#mazeSettings.closed #settingContent {
+  display: none;
 }
 
 /*
