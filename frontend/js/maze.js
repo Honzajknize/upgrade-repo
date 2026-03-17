@@ -4,7 +4,7 @@
      constructor(size, wallSize, corridorSize, algorithm = "silkroad") {
          this.size = size;
          this.wallSize = wallSize;
-         this.corridorSize = wallSize;
+         this.corridorSize = corridorSize;
          this.algorithm = algorithm;
          this.grid = Array.from({ length: size }, () => Array(size).fill(1));
          this.walls = [];
@@ -12,15 +12,13 @@
          this.collisionEnabled = true;
          this.debugMode = false;
          
-        if(this.algorithm === "silkroad") {
-            //this.generateSilkRoadMaze();
-            this.generateBinaryTree();
-        } else if (this.algorithm === "prim") {
-            this.generatePrim();
+        if(this.algorithm === "prim") {
+            this.generatePrimMaze();
         } else if (this.algorithm === "binaryTree") {
             this.generateBinaryTree();
         }else {
             console.error("Neznámý algoritmus!");
+            this.generateBinaryTree();
         
             
         }
@@ -61,46 +59,127 @@
 
      generatePrimMaze(){
         console.log ("Generování Primova bludiště...");
-        let startX = 1, startY = 1; // Startovní bod
-        this.grid[startY][startX] = 0;
-        this.startPosition = { x: startX, y: startY };
-        let walls = [];
+       this.grid = Array.from({ length: this.size}, () => Array(this.size).fill(1));
 
-        //přidání počátečních stěn do seznamu
-        this.addWalls(startX, startY, walls);
+       const startX = 1;
+       const startY = 1;
+       this.startPosition = { x: startX, y: startY };
+       this.grid[startY][startX] = 0;
 
-        while(walls.length > 0) {
-            let randIndex = Math.floor(Math.random() * walls.length);
-            let [wx, wy] = walls[randIndex]; // randoms wall
-            walls.splice(randIndex, 1); // odstraníme z seznamu
+       const frontier = [];
+       this.addFrontierCells(startX, startY, frontier);
 
-            //Kontrola jestli můžem zbourat
-            if(this.canCarve(wx,wy)) {
-                this.grid[wy][wx] = 0; // Prorazíme stěnu
-                this.addWalls(wx,wy, walls);
-            }
-        }
+       while (frontier.length > 0) {
+        const randINdex = Math.floor(Math.random() * frontier.length);
+        const cell = frontier.splice(randINdex, 1)[0];
+        const {x,y} = cell;
 
-        //Nalezení konečného bodu bludiště (nejdál od startu)
-        this.goalPosition = this.findFarthestPoint(startX, startY);
-        if(!this.goalPosition){
-            console.error("chyba: nebyl nalezen žádný cíl");
-            this.goalPosition = { x: this.size - 2, y: this.size - 2};
-        }
-        this.grid[this.goalPosition.y][this.goalPosition.x] = 0;
+        const visitedNeighbors = this. getVisitedNeighbors(x,y);
 
+        if (visitedNeighbors.length === 0) continue;
 
-        console.log(`startovní pozica : X=${this.startPosition.x}, Y=${this.startPosition.y}`);
-        console.log(`Cíl: X=${this.goalPosition.x}, Y=${this.goalPosition.y}`);
+        const neighbor = visitedNeighbors[Math.floor(Math.random() * visitedNeighbors.length)];
 
-        if (!this.startPosition) {
-            console.error(" Chyba: `startPosition` nebyla správně nastavena!");
-        } else {
-            console.log(` Startovní pozice správně nastavena: X=${this.startPosition.x}, Y=${this.startPosition.y}`);
-        }
-        
+        const wallX = x + (neighbor.x - x) / 2;
+        const wallY = y + (neighbor.y -y) /2;
+
+        this.grid[y][x] = 0;
+        this.grid[wallY][wallX] = 0;
+
+        this.addFrontierCells(x,y,frontier);
+       }
+
+       this.goalPosition = this.findFarthestPoint(this.startPosition.x, this.startPosition.y);
+       this.grid[this.goalPosition.y][this.goalPosition.x] = 0;
+
+       console.log(`Start: X=${this.startPosition.x}, Y=${this.startPosition.y}`);
+       console.log(`Cíl: X=${this.goalPosition.x}, Y=${this.goalPosition.y}`);
      }
 
+     addFrontierCells(x,y,frontier) {
+        const directions = [
+            [2,0],
+            [-2,0],
+            [0,2],
+            [0,-2]
+        ];
+        for (const [dx,dy] of directions) {
+            const nx = x + dx;
+            const ny = y + dy;
+
+            if(this.isInsideMazeCell(nx,ny) && this.grid[ny][nx] === 1) {
+                const alreadyInFrontier = frontier.some(cell => cell.x === nx && cell.y === ny);
+                if(!alreadyInFrontier) {
+                    frontier.push({ x: nx, y: ny});
+                }
+            }
+        }
+     }
+
+     getVisitedNeighbors(x,y) {
+         const neighbors = [];
+    const directions = [
+        [2, 0],
+        [-2, 0],
+        [0, 2],
+        [0, -2]
+    ];
+
+    for (const [dx, dy] of directions) {
+        const nx = x + dx;
+        const ny = y + dy;
+
+        if (this.isInsideMazeCell(nx, ny) && this.grid[ny][nx] === 0) {
+            neighbors.push({ x: nx, y: ny });
+        }
+    }
+
+    return neighbors;
+}
+     
+
+     isInsideMazeCell(x,y) {
+        return x > 0 && x < this.size - 1 && y > 0 && y < this.size - 1;
+     }
+
+     findFarthestReachablePoint(startX, startY) {
+    const queue = [{ x: startX, y: startY, dist: 0 }];
+    const visited = new Set([`${startX},${startY}`]);
+
+    let farthest = { x: startX, y: startY, dist: 0 };
+
+    const directions = [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1]
+    ];
+
+    while (queue.length > 0) {
+        const current = queue.shift();
+
+        if (current.dist > farthest.dist) {
+            farthest = current;
+        }
+
+        for (const [dx, dy] of directions) {
+            const nx = current.x + dx;
+            const ny = current.y + dy;
+            const key = `${nx},${ny}`;
+
+            if (
+                this.isInBounds(nx, ny) &&
+                this.grid[ny][nx] === 0 &&
+                !visited.has(key)
+            ) {
+                visited.add(key);
+                queue.push({ x: nx, y: ny, dist: current.dist + 1 });
+            }
+        }
+    }
+
+    return { x: farthest.x, y: farthest.y };
+}
      generateSilkRoadMaze(){
         console.log ("silkroad maze");
         //1) vytvorime prazdny grid 

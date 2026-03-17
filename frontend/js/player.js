@@ -100,9 +100,9 @@ setStartPosition(){
 
 
    this.mesh.position.set(
-        offsetX + this.maze.startPosition.x * this.wallSize,
+        offsetX + this.maze.startPosition.x * this.maze.corridorSize,
         0.5,
-        offsetZ + this.maze.startPosition.y * this.wallSize
+        offsetZ + this.maze.startPosition.y * this.maze.corridorSize
    );
 
    console.log(` Hráč se spawnul na start X=${this.mesh.position.x}, Z=${this.mesh.position.z}`);

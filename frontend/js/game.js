@@ -23,24 +23,20 @@ export class Game {
      }
 
     //podlaha
-    const floorGeometry = new THREE.PlaneGeometry(50,50);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa});
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI /2; //Otočení aby byl podlahou
-    floor.position.y = 0; 
-    this.scene.add(floor);
+    
+    
 
     //velikosti bludiště
      this.wallSize = 1;
      this.corridorSize = 3;
-     this.mazeSize = 45; //predtim bylo 15*
+     this.mazeSize = 15; //predtim bylo 15*
      this.selectedAlgorithm = "binaryTree";
 
      //světlo
      this.setupLights();
      //maze
      this.createMaze();
-
+     this.createFloor();
      this.createPlayer();
      this.addWinMenuListeners();
     
@@ -116,6 +112,24 @@ export class Game {
     this.maze.build(this.scene);
  }
 
+ createFloor() {
+    const floorSize = this.mazeSize * this.corridorSize + this.corridorSize * 4;
+
+    if (this.floor) {
+        this.scene.remove(this.floor);
+    }
+
+    const floorGeometry = new THREE.PlaneGeometry(floorSize, floorSize);
+    const floorMaterial = new THREE.MeshStandardMaterial({color: 0xaaaaaa });
+    
+    this.floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    this.floor.rotation.x = -Math.PI /2;
+    this.floor.position.y = 0;
+
+    this.scene.add(this.floor);
+
+ }
+
  createPlayer() {
     this.player = new Player(this, this.scene, this.maze, this.wallSize, 2);
     window.player = this.player;
@@ -183,14 +197,14 @@ export class Game {
     console.log (" Reset bludiště...");
      //Odstranění objektů bludiště
      this.maze.removeFromScene(this.scene);
-     this.createMaze();
+    
      if(this.player) {
         this.player.destroy();
      } 
-        this.createPlayer(); //vytvoreni novyho player se spravnym ovladanim
+      this.createMaze();
+      this.createFloor();
+      this.createPlayer(); //vytvoreni novyho player se spravnym ovladanim
     
-     
-
      setTimeout(() => {
         if (this.player && this.player.mesh) {
             this.player.resetPosition();

@@ -24,13 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const generateButton = document.getElementById("generateMaze");
     if (generateButton) {
         generateButton.addEventListener("click", () => {
-            const shape = document.getElementById("mazeShape").value;
             const size = parseInt(document.getElementById("mazeSize").value);
-            const difficulty = parseInt(document.getElementById("mazeDifficulty").value);
             const algorithm = document.getElementById("mazeAlgo").value;
             
 
-            console.log(`Generování s: shape=${shape}, size=${size}, difficulty=${difficulty}, algo=${algorithm}`);
+            console.log(`Generování s: size=${size}, algo=${algorithm}`);
 
             game.selectedAlgorithm = algorithm;
             game.mazeSize = size;
