@@ -29,12 +29,17 @@
         <button id="toggleCamera">Zapnout kameru</button>
         <button id="resetMaze">Refresh</button>
         <button id="fullscreenBtn">[ ]</button>
+        <button id="toggleMiniMap">Minimapa</button>
       </div>
   <!-- wrapper-->
    <div id="innerPanel">
 
       <!-- Hlavní obsah -->
       <div id="mainContent">
+
+         <div id="gameMiniMap">
+            <canvas id="miniMapCanvas" width="200" height="200"></canvas>
+          </div>
   
         <!-- Kamera vlevo -->
         <div id="cameraContainer">
@@ -42,7 +47,9 @@
         </div>
   
         <!-- Hra uprostřed -->
-        <div id="gameContainer"></div>
+        <div id="gameContainer">
+         
+        </div>
   
         <!-- Panel nastavení vpravo--> 
        

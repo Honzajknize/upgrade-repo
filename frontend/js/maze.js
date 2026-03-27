@@ -23,6 +23,17 @@
             
         }
      }
+
+  //minimap data
+    getMinimapData(){
+        return {
+            layoutType: "square",
+            grid: this.grid,
+            start: this.startPosition,
+            goal: this.goalPosition
+        };
+    }
+
 //maze generation methods
      generateBinaryTree() {
 
@@ -514,6 +525,10 @@
         }
         
     }
+
+  
+
+
 
    
 toggleDebugViewMode() {

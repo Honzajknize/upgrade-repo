@@ -4,8 +4,10 @@ import Player from './player.js';
 
 export class Game {
 
- constructor() {
+ constructor(minimap = null) {
+    
     console.log(" Hra inicializována!");
+    this.minimap = minimap;
     this.gameEnded = false;
     this.frozen = false;
      this.scene = new THREE.Scene();
@@ -46,18 +48,7 @@ export class Game {
      this.camera.lookAt(this.player.mesh.position);
    
 
-       /* const mazeSelector = document.getElementById("mazeAlgo");
 
-        if(mazeSelector) {
-            mazeSelector.addEventListener("change", (event) => {
-                console.log("Změna algoritmu:", event.target.value);
-                this.selectedAlgorithm = event.target.value;
-                this.resetMaze();
-            });
-        } else {
-            console.error("Element #mazeAlgo nebyl nalezen v DOM.");
-        }
-            */
     
 
       document.addEventListener('keydown', (event) => {
@@ -105,11 +96,21 @@ export class Game {
     console.log(" Generování bludiště pomocí:", this.selectedAlgorithm);
    
 
-    this.maze = new Maze(this.mazeSize,
+    this.maze = new Maze(
+        this.mazeSize,
          this.wallSize,
          this.corridorSize,
-         this.selectedAlgorithm); 
+         this.selectedAlgorithm
+        ); 
     this.maze.build(this.scene);
+    console.log("maze instance:", this.maze);
+    console.log("minimap instance:", this.minimap);
+
+    if (this.minimap) {
+        const data = this.maze.getMinimapData();
+        console.log("minimap data from maze", data);
+        this.minimap.render(this.maze.getMinimapData());
+    }
  }
 
  createFloor() {

@@ -5,50 +5,7 @@
 @use 'winmenu';
 @use 'maze-settings';
 @use 'mixins';
+@use 'minimap';
 
 
 
-/*
-//Kontejner pro kameru a tlačítko
-.camera-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 15px;
-    background: $background-dark;
-    border-radius: $border-radius;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-//Kamera (video)
-#cameraFeed {
-    width: 320px;
-    height: 240px;
-    border: 2px solid white;
-    border-radius: 5px;
-    background: black; //Pokud kamera není zapnutá
-}
-
-// Tlačítko pro on/off kamery
-#toggleCamera {
-    margin-top: 10px;
-    padding: 8px 12px;
-    font-size: 16px;
-    font-weight: bold;
-    background: $primary-color;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s ease-in-out;
-
-    &:hover {
-        background: $hover-color;
-    }
-
-}
-*/

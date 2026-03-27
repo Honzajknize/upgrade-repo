@@ -1,13 +1,17 @@
 import { Game } from './game.js';
+import { MiniMap } from "./ui/minimap.js";
+
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Dom plně načten!");
-    const game = new Game();
+    const miniMap = new MiniMap();
+    const game = new Game(miniMap);
     console.log("Game uspešně vytvorena");
 
 //rozbalovací panel
     const panel = document.getElementById("mazeSettings");
     const toggleBtn = document.getElementById("toggleSettings");
+
     if(toggleBtn && panel) {
         toggleBtn.addEventListener("click", () => {
             panel.classList.toggle("closed");
@@ -32,9 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             game.selectedAlgorithm = algorithm;
             game.mazeSize = size;
-
-
+        
             game.resetMaze();
+
+        });
+    }
 // Resize fce pro canvas
 const container = document.getElementById("gameContainer");
 function resizeCanvas() {
@@ -51,12 +57,7 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-
-        });
-    }  
-});
-
-  //Fullscreen toggle
+ //Fullscreen toggle
   const fullscreenBtn = document.getElementById("fullscreenBtn");
   const appContainer = document.getElementById("appContainer");
   
@@ -68,7 +69,12 @@ window.addEventListener('resize', resizeCanvas);
             document.exitFullscreen();
         }
     });
-  }
+
+        
+    }  
+});
+ 
+
     
 
 
