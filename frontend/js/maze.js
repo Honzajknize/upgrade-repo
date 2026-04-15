@@ -374,6 +374,23 @@
 
         this.walls = [];
 
+        const textureLoader = new THREE.TextureLoader();
+        const wallTexture = textureLoader.load("../assets/wall2.png");
+
+        wallTexture.magFilter = THREE.NearestFilter;
+        wallTexture.minFilter = THREE.NearestFilter;
+        wallTexture.generateMipmaps = false;
+
+        const wallGeometry = new THREE.BoxGeometry(
+            this.corridorSize,
+            this.wallSize * 10,
+            this.corridorSize
+        );
+
+        const wallMaterial = new THREE.MeshStandardMaterial({
+            map: wallTexture
+        });
+
         for(let y = 0; y < this.grid.length; y++) {
             for (let x = 0; x < this.grid[y].length; x++) {
                 if (this.grid[y][x] === 1) {
@@ -391,10 +408,12 @@
                         this.walls.push(debugMesh); // přidáme ho do walls, aby šel pak odstranit
                     }
                     
-                    const wallGeometry = new THREE.BoxGeometry(this.corridorSize,this.wallSize, this.corridorSize);
+                    /*const wallGeometry = new THREE.BoxGeometry(this.corridorSize,this.wallSize, this.corridorSize);
                     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x8B0000});
                     const wall = new THREE.Mesh(wallGeometry, wallMaterial);
 
+                    */
+                   const wall = new THREE.Mesh(wallGeometry, wallMaterial);
                     //Korekce umístění zdí
                     wall.position.set(
                         offsetX + x * this.corridorSize,
@@ -409,6 +428,7 @@
 
         //Cíl 
         const goalGeometry = new THREE.BoxGeometry(this.corridorSize * 0.8, 0.2, this.corridorSize * 0.8);
+
         const goalMaterial = new THREE.MeshStandardMaterial({
              color: 0xFFD700,
              transparent: true,

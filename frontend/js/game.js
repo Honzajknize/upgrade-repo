@@ -121,7 +121,24 @@ export class Game {
     }
 
     const floorGeometry = new THREE.PlaneGeometry(floorSize, floorSize);
-    const floorMaterial = new THREE.MeshStandardMaterial({color: 0xaaaaaa });
+    //const floorMaterial = new THREE.MeshStandardMaterial({color: 0xaaaaaa });
+    const textureLoader = new THREE.TextureLoader();
+    const floorTexture = textureLoader.load("../assets/floor.png");
+
+    floorTexture.magFilter = THREE.NearestFilter;
+    floorTexture.minFilter = THREE.NearestFilter;
+    floorTexture.generateMipmaps = false;
+
+    //opakování textury
+    floorTexture.wrapS = THREE.RepeatWrapping;
+    floorTexture.wrapT = THREE.RepeatWrapping;
+    const repeatCount = this.mazeSize;
+
+    floorTexture.repeat.set(repeatCount * 5, repeatCount * 5);
+
+    const floorMaterial = new THREE.MeshStandardMaterial({
+        map: floorTexture
+    });
     
     this.floor = new THREE.Mesh(floorGeometry, floorMaterial);
     this.floor.rotation.x = -Math.PI /2;

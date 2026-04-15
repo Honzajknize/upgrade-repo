@@ -72,9 +72,12 @@ export class MiniMap {
                     ctx.fillStyle = "white";
                 }
 
+                const drawX = (cols -1 -x) * cellSize;
+                const drawY = (rows -1 -y) * cellSize;
+
                 ctx.fillRect(
-                    x * cellSize,
-                    y * cellSize,
+                    drawX,
+                    drawY,
                     cellSize,
                     cellSize
                 );
