@@ -115,14 +115,15 @@ console.log("TF backend po:", tf.getBackend());
 
 
     // tiny face detektor
-    await faceapi.nets.tinyFaceDetector.loadFromUri('/knihovny/faceapijs/models');
+    const MODEL_URL = "../../knihovny/faceapijs/models";
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
     try {
-        await faceapi.nets.faceLandmark68TinyNet.loadfromUri('/knihovny/faceapijs/models')
+        await faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL);
         USE_TINY_LANDMARKS = true;
     console.log("Použity tiny landmarks");
 
     } catch {
-        await faceapi.nets.faceLandmark68Net.loadFromUri('/knihovny/faceapijs/models');
+        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
         USE_TINY_LANDMARKS = false;
         console.log("Tiny landmarks nedostupné, použití full landmarks");
     }
