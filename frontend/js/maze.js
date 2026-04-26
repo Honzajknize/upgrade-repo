@@ -22,6 +22,7 @@
         
             
         }
+        
      }
 
   //minimap data
@@ -383,7 +384,7 @@
 
         const wallGeometry = new THREE.BoxGeometry(
             this.corridorSize,
-            this.wallSize * 10,
+            this.wallSize * 5,
             this.corridorSize
         );
 
@@ -427,16 +428,26 @@
         }
 
         //Cíl 
+
+        const goalTexture = textureLoader.load("../assets/finish.png");
+        goalTexture.magFilter = THREE.NearestFilter;
+        goalTexture.minFilter = THREE.NearestFilter;
+        goalTexture.generateMipmaps = false;
+
+
         const goalGeometry = new THREE.BoxGeometry(this.corridorSize * 0.8, 0.2, this.corridorSize * 0.8);
 
         const goalMaterial = new THREE.MeshStandardMaterial({
-             color: 0xFFD700,
+             map: goalTexture,
              transparent: true,
-             opacity: 0.3
+             alphaTest: 0.1,
+             polygonOffset: true,
+             polygonOffsetFactor: -1,
+             polygonOffsetUnits: -1
              });
         this.goal = new THREE.Mesh(goalGeometry, goalMaterial);
         this.goal.position.set(
-            offsetX + this.goalPosition.x * this.corridorSize, 0.1,
+            offsetX + this.goalPosition.x * this.corridorSize, 0.15,
             offsetZ + this.goalPosition.y * this.corridorSize);
         scene.add(this.goal);
 
@@ -523,6 +534,8 @@
     
         return x < minX || x > maxX || z < minZ || z > maxZ;
     }
+
+    
     
 
     resetMaze() {

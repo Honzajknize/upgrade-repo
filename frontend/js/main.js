@@ -28,14 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const generateButton = document.getElementById("generateMaze");
     if (generateButton) {
         generateButton.addEventListener("click", () => {
-            const size = parseInt(document.getElementById("mazeSize").value);
             const algorithm = document.getElementById("mazeAlgo").value;
-            
-
-            console.log(`Generování s: size=${size}, algo=${algorithm}`);
-
             game.selectedAlgorithm = algorithm;
-            game.mazeSize = size;
+            game.applyMazeSizeFromInput();
+            console.log(`Generování s: size=${game.mazeSize}, algo=${algorithm}`);
         
             game.resetMaze();
 

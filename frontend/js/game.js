@@ -31,12 +31,15 @@ export class Game {
     //velikosti bludiště
      this.wallSize = 1;
      this.corridorSize = 3;
-     this.mazeSize = 15; //predtim bylo 15*
+     this.mazeSize = 15; 
      this.selectedAlgorithm = "binaryTree";
 
      //světlo
      this.setupLights();
      //maze
+    this.applyMazeSizeFromInput();
+
+
      this.createMaze();
      this.createFloor();
      this.createPlayer();
@@ -197,6 +200,15 @@ export class Game {
     }
  }
 
+applyMazeSizeFromInput() {
+    const mazeSizeInput = document.getElementById("mazeSize");
+    if (!mazeSizeInput) return;
+
+    const safeValue = this.sanitizeMazeSize(mazeSizeInput.value);
+    this.mazeSize = safeValue;
+    mazeSizeInput.value = safeValue;
+}
+
  restartGame() {
     const win = document.getElementById("winMenu");
     if (win) win.style.display = "none";
@@ -204,7 +216,7 @@ export class Game {
     this.unfreeze();
    /* document.getElementById("winMenu").style.display = "none";
    */
-    
+    this.applyMazeSizeFromInput();
     this.resetMaze();
     
 }
@@ -232,6 +244,28 @@ export class Game {
      },200);
      //this.maze.build(this.scene);
      //this.player.resetPosition();
+ }
+
+ sanitizeMazeSize(rawValue) {
+    let value = Number(rawValue);
+
+    if (!Number.isFinite(value)) {
+        value = 15;
+    }
+
+    value = Math.floor(value);
+    if(value < 5) value = 5;
+    if (value > 51) value = 51;
+
+    if (value % 2 === 0) {
+        value -= 1;
+    }
+
+    //kdyby pretekl max
+    if (value > 51) {
+        value = 49;
+    }
+    return value;
  }
 
  addWinMenuListeners() {
